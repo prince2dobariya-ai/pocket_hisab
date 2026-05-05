@@ -1,0 +1,65 @@
+import 'package:flutter/material.dart';
+import 'package:pocket_hisab/constants/colors.dart';
+import 'package:pocket_hisab/screens/drawer/home_drawer.dart';
+import 'package:pocket_hisab/screens/expense/add_expense_screen.dart';
+import 'package:pocket_hisab/screens/hisab/person_screen.dart';
+import 'package:pocket_hisab/screens/hisab/hisab_transaction_screen.dart';
+import 'package:pocket_hisab/screens/home/home_screen.dart';
+import 'package:pocket_hisab/widgets/custom_appbar.dart';
+
+class HomeMain extends StatefulWidget {
+  const HomeMain({super.key});
+
+  @override
+  State<HomeMain> createState() => _HomeMainState();
+}
+
+class _HomeMainState extends State<HomeMain>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      drawer: HomeDrawer(),
+      appBar: CustomAppBar(title: "Khissu"),
+      body: TabBarView(
+        controller: _tabController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [HomeScreen(), AddExpenseScreen(), HisabScreen()],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _tabController.index,
+        onTap: (value) {
+          _tabController.animateTo(value);
+        },
+        backgroundColor: colorButton,
+        selectedItemColor: colorPrimary,
+        type: BottomNavigationBarType.fixed,
+        selectedLabelStyle: TextStyle(
+          color: colorPrimary,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: TextStyle(color: colorFontWhite),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: "Expense"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Hisab"),
+        ],
+      ),
+    );
+  }
+}

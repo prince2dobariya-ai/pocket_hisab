@@ -61,7 +61,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: "Add Expense"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

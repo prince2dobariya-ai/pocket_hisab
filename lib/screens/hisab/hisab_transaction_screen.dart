@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:path/path.dart';
 import 'package:pocket_hisab/controllers/dashboard_controller.dart';
 import 'package:pocket_hisab/controllers/hisab_controller.dart';
 import 'package:pocket_hisab/screens/hisab/add_hisab_screen.dart';
 import 'package:pocket_hisab/screens/hisab/person_hisab_history_screen.dart';
-import 'package:pocket_hisab/widgets/custom_appbar.dart';
 
 class HisabScreen extends StatelessWidget {
   const HisabScreen({super.key});
@@ -16,7 +14,6 @@ class HisabScreen extends StatelessWidget {
     final hisabCtrl = Get.find<HisabController>();
 
     return Scaffold(
-      appBar: const CustomAppBar(title: "Friends Hisab"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

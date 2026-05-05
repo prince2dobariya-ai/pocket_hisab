@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_hisab/constants/colors.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -10,8 +11,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.green,
+      backgroundColor: colorPrimary,
       title: Text(title, style: TextStyle(color: Colors.white)),
+      centerTitle: true,
     );
   }
 }

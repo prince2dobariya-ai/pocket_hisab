@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/models/wallet_model.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
+import 'package:pocket_hisab/widgets/custome_textform_filed.dart';
 
 class AddWalletMoneyScreen extends StatefulWidget {
   const AddWalletMoneyScreen({super.key});
@@ -51,16 +52,11 @@ class _AddWalletMoneyScreenState extends State<AddWalletMoneyScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              TextField(
+              CustomTextField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: "Enter amount (e.g. 5000)",
-                  prefixIcon: const Icon(Icons.currency_rupee),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+                labelText: "Amount",
+                hintText: "Enter amount (e.g. 5000)",
               ),
               const SizedBox(height: 24),
               const Text(

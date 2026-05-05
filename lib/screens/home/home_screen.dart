@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:pocket_hisab/screens/home/widgets/quick_actions.dart';
 import 'package:pocket_hisab/screens/home/widgets/salary_card.dart';
 import 'package:pocket_hisab/screens/home/widgets/saving_card.dart';
 import 'package:pocket_hisab/screens/home/widgets/wallet_card.dart';
@@ -19,21 +17,6 @@ class HomeScreen extends StatelessWidget {
               spacing: 16,
               crossAxisAlignment: .start,
               children: [
-                Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    /// header
-                    Text(
-                      "Good Morning 👋",
-                      style: TextStyle(fontSize: 22, fontWeight: .bold),
-                    ),
-                    Text(
-                      DateFormat.yMMMM().format(DateTime.now()),
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ],
-                ),
-
                 /// salary card
                 SalaryCard(),
 
@@ -45,7 +28,6 @@ class HomeScreen extends StatelessWidget {
                     Expanded(child: SavingCard()),
                   ],
                 ),
-                QuickActions(),
               ],
             ),
           ),

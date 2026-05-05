@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_hisab/controllers/salary_controller.dart';
-import 'package:pocket_hisab/controllers/transaction_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/controllers/emi_controller.dart';
 import 'package:pocket_hisab/models/salary_model.dart';
+import 'package:pocket_hisab/widgets/custome_textform_filed.dart';
 
 class SalaryCard extends StatelessWidget {
   const SalaryCard({super.key});
@@ -259,16 +259,11 @@ class _AddSalaryBottomSheetState extends State<_AddSalaryBottomSheet> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
-          TextField(
+          CustomTextField(
             controller: _amountController,
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              hintText: "Enter amount (e.g. 35000)",
-              prefixIcon: const Icon(Icons.currency_rupee),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+            labelText: "Amount",
+            hintText: "Enter amount (e.g. 35000)",
           ),
           const SizedBox(height: 16),
           const Text(
@@ -277,7 +272,7 @@ class _AddSalaryBottomSheetState extends State<_AddSalaryBottomSheet> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _monthController.text,
+            initialValue: _monthController.text,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
