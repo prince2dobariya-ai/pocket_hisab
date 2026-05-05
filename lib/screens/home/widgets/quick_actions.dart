@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_hisab/screens/expense/add_expense_screen.dart';
 import 'package:pocket_hisab/screens/add_wallet_money_screen.dart';
-import 'package:pocket_hisab/screens/hisab_screen.dart';
+import 'package:pocket_hisab/screens/hisab/hisab_screen.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});

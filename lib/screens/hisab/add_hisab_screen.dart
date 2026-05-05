@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pocket_hisab/controllers/hisab_controller.dart';
+import 'package:pocket_hisab/controllers/wallet_controller.dart';
+import 'package:pocket_hisab/models/hisab_model.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
 
 class AddHisabScreen extends StatefulWidget {
@@ -13,7 +17,8 @@ class _AddHisabScreenState extends State<AddHisabScreen> {
   final _nameController = TextEditingController();
   final _noteController = TextEditingController();
   final _dateController = TextEditingController(
-    text: "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+    text:
+        "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
   );
 
   bool _isBorrowed = true; // true = Borrowed (Taken), false = Lent (Given)
@@ -64,14 +69,18 @@ class _AddHisabScreenState extends State<AddHisabScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: _isBorrowed ? Colors.red.shade400 : Colors.transparent,
+                          color: _isBorrowed
+                              ? Colors.red.shade400
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Center(
                           child: Text(
                             "Borrowed (Taken)",
                             style: TextStyle(
-                              color: _isBorrowed ? Colors.white : Colors.black54,
+                              color: _isBorrowed
+                                  ? Colors.white
+                                  : Colors.black54,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -85,14 +94,18 @@ class _AddHisabScreenState extends State<AddHisabScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: !_isBorrowed ? Colors.green.shade400 : Colors.transparent,
+                          color: !_isBorrowed
+                              ? Colors.green.shade400
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Center(
                           child: Text(
                             "Lent (Given)",
                             style: TextStyle(
-                              color: !_isBorrowed ? Colors.white : Colors.black54,
+                              color: !_isBorrowed
+                                  ? Colors.white
+                                  : Colors.black54,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -193,20 +206,84 @@ class _AddHisabScreenState extends State<AddHisabScreen> {
               height: 56,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isBorrowed ? Colors.red.shade400 : Colors.green.shade400,
+                  backgroundColor: _isBorrowed
+                      ? Colors.red.shade400
+                      : Colors.green.shade400,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                onPressed: () {
-                  // TODO: Implement save logic
-                  Navigator.pop(context);
+                onPressed: () async {
+                  final amountText = _amountController.text.trim();
+                  final nameText = _nameController.text.trim();
+
+                  if (amountText.isEmpty || nameText.isEmpty) {
+                    Get.snackbar(
+                      "Error",
+                      "Please enter amount and friend's name",
+                    );
+                    return;
+                  }
+
+                  final amount = double.tryParse(amountText);
+                  if (amount == null || amount <= 0) {
+                    Get.snackbar("Error", "Invalid amount entered");
+                    return;
+                  }
+
+                  final hisabCtrl = Get.find<HisabController>();
+                  final walletCtrl = Get.find<WalletController>();
+
+                  // Add Hisab
+                  final type = _isBorrowed ? 'borrowed' : 'given';
+                  await hisabCtrl.addHisab(
+                    HisabModel(
+                      personName: nameText,
+                      type: type,
+                      amount: amount,
+                      note: _noteController.text.trim(),
+                      createdAt: DateTime.now().toIso8601String(),
+                      status: 'pending',
+                      amountPaid: 0,
+                      remainingAmount: amount,
+                    ),
+                  );
+
+                  // Affect Wallet
+                  if (walletCtrl.wallets.isNotEmpty) {
+                    final walletId = walletCtrl.wallets.first.id!;
+                    if (_isBorrowed) {
+                      await walletCtrl.credit(
+                        walletId: walletId,
+                        amount: amount,
+                        source: 'Hisab: $nameText',
+                        note: 'Borrowed from $nameText',
+                      );
+                    } else {
+                      await walletCtrl.debit(
+                        walletId: walletId,
+                        amount: amount,
+                        source: 'Hisab: $nameText',
+                        note: 'Lent to $nameText',
+                      );
+                    }
+                  } else {
+                    Get.snackbar(
+                      "Info",
+                      "Hisab recorded, but no wallet found to update balance.",
+                    );
+                  }
+
+                  Get.back();
                 },
                 child: Text(
                   _isBorrowed ? "Save Borrowed" : "Save Lent",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

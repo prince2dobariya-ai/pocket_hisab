@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pocket_hisab/controllers/transaction_controller.dart';
+import 'package:pocket_hisab/controllers/wallet_controller.dart';
+import 'package:pocket_hisab/models/expense_model.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
 
 class AddExpenseScreen extends StatefulWidget {
@@ -194,9 +198,52 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                onPressed: () {
-                  // TODO: Implement save logic
-                  Navigator.pop(context);
+                onPressed: () async {
+                  final amountText = _amountController.text.trim();
+                  if (amountText.isEmpty) {
+                    Get.snackbar("Error", "Please enter amount");
+                    return;
+                  }
+
+                  final amount = double.tryParse(amountText);
+                  if (amount == null || amount <= 0) {
+                    Get.snackbar("Error", "Invalid amount entered");
+                    return;
+                  }
+
+                  final txCtrl = Get.find<TransactionController>();
+                  final walletCtrl = Get.find<WalletController>();
+
+                  // 1. Save expense to database
+                  await txCtrl.addExpense(
+                    ExpenseModel(
+                      category: _selectedCategory,
+                      amount: amount,
+                      note: _noteController.text.trim(),
+                      date: _dateController.text,
+                      createdAt: DateTime.now().toIso8601String(),
+                    ),
+                  );
+
+                  // 2. Deduct from wallet
+                  if (walletCtrl.wallets.isNotEmpty) {
+                    final walletId = walletCtrl.wallets.first.id!;
+                    await walletCtrl.debit(
+                      walletId: walletId,
+                      amount: amount,
+                      source: 'Expense: $_selectedCategory',
+                      note: _noteController.text.trim().isNotEmpty
+                          ? _noteController.text.trim()
+                          : 'Paid via $_selectedPaymentMethod',
+                    );
+                  } else {
+                    Get.snackbar(
+                      "Info",
+                      "Expense recorded, but no wallet found to update balance.",
+                    );
+                  }
+
+                  Get.back();
                 },
                 child: const Text(
                   "Save Expense",
