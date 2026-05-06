@@ -59,63 +59,63 @@ class _AddWalletMoneyScreenState extends State<AddWalletMoneyScreen> {
                 hintText: "Enter amount (e.g. 5000)",
               ),
               const SizedBox(height: 24),
-              const Text(
-                "Select Wallet",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
-              if (wallets.isEmpty)
-                const Text(
-                  "No wallets found. A 'Main Wallet' will be created automatically.",
-                  style: TextStyle(color: Colors.grey),
-                )
-              else
-                DropdownButtonFormField<WalletModel>(
-                  value: _selectedWallet,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  items: wallets
-                      .map(
-                        (w) => DropdownMenuItem(
-                          value: w,
-                          child: Text(w.walletName),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedWallet = value;
-                    });
-                  },
-                ),
-              const SizedBox(height: 24),
-              const Text(
-                "Source",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: _sourceController.text,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                items: ['Salary', 'Bonus', 'Other']
-                    .map(
-                      (source) =>
-                          DropdownMenuItem(value: source, child: Text(source)),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    _sourceController.text = value;
-                  }
-                },
-              ),
+              // const Text(
+              //   "Select Wallet",
+              //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              // ),
+              // const SizedBox(height: 8),
+              // if (wallets.isEmpty)
+              //   const Text(
+              //     "No wallets found. A 'Main Wallet' will be created automatically.",
+              //     style: TextStyle(color: Colors.grey),
+              //   )
+              // else
+              //   DropdownButtonFormField<WalletModel>(
+              //     value: _selectedWallet,
+              //     decoration: InputDecoration(
+              //       border: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(12),
+              //       ),
+              //     ),
+              //     items: wallets
+              //         .map(
+              //           (w) => DropdownMenuItem(
+              //             value: w,
+              //             child: Text(w.walletName),
+              //           ),
+              //         )
+              //         .toList(),
+              //     onChanged: (value) {
+              //       setState(() {
+              //         _selectedWallet = value;
+              //       });
+              //     },
+              //   ),
+              // const SizedBox(height: 24),
+              // const Text(
+              //   "Source",
+              //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              // ),
+              // const SizedBox(height: 8),
+              // DropdownButtonFormField<String>(
+              //   value: _sourceController.text,
+              //   decoration: InputDecoration(
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(12),
+              //     ),
+              //   ),
+              //   items: ['Salary', 'Bonus', 'Other']
+              //       .map(
+              //         (source) =>
+              //             DropdownMenuItem(value: source, child: Text(source)),
+              //       )
+              //       .toList(),
+              //   onChanged: (value) {
+              //     if (value != null) {
+              //       _sourceController.text = value;
+              //     }
+              //   },
+              // ),
               const Spacer(),
               SizedBox(
                 width: double.infinity,

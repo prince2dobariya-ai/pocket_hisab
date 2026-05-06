@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pocket_hisab/controllers/salary_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/controllers/emi_controller.dart';
@@ -17,8 +18,8 @@ class SalaryCard extends StatelessWidget {
 
     return Obx(() {
       final latestSalary = salaryCtrl.latestSalary?.amount ?? 0.0;
-      final month =
-          salaryCtrl.latestSalary?.month ?? DateTime.now().month.toString();
+      final month = salaryCtrl.latestSalary?.month == null?
+          DateFormat('MMM').format(DateTime.now()) : DateTime.now().month.toString();
       final walletAdded = walletCtrl.totalAddedFromSalary;
       final emiPaid = emiCtrl.totalMonthlyEmi;
 

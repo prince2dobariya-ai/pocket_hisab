@@ -88,15 +88,24 @@ class DatabaseService {
     await db.execute('''
       CREATE TABLE hisab_transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        person_name TEXT NOT NULL,
+        person_id INTEGER NOT NULL,
         type TEXT NOT NULL,
         amount REAL NOT NULL,
         amount_paid REAL NOT NULL DEFAULT 0,
         remaining_amount REAL NOT NULL,
         status TEXT NOT NULL DEFAULT 'pending',
         note TEXT,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (person_id) REFERENCES persons(id)
       )
+    ''');
+
+    // 7. persons
+    await db.execute('''
+    CREATE TABLE persons (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      person_name TEXT NOT NULL
+    )
     ''');
   }
 
