@@ -15,11 +15,6 @@ class HisabController extends GetxController {
     fetchAll();
   }
 
-    Future<void> fetchPersons() async {
-    isLoading.value = true;
-    isLoading.value = false;
-  }
-
   Future<void> fetchAll() async {
     isLoading.value = true;
     final rows = await _db.getAll(_table);

@@ -7,6 +7,7 @@ import 'package:pocket_hisab/controllers/salary_controller.dart';
 import 'package:pocket_hisab/controllers/transaction_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/screens/home/home_main.dart';
+import 'package:pocket_hisab/constants/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,10 +31,9 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Khissu - Pocket Hisab',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: .system,
       home: const HomeMain(),
     );
   }
