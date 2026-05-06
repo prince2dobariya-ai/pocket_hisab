@@ -37,7 +37,7 @@ class _HomeMainState extends State<HomeMain>
       body: TabBarView(
         controller: _tabController,
         physics: const NeverScrollableScrollPhysics(),
-        children: [HomeScreen(), AddExpenseScreen(), HisabScreen()],
+        children: [HomeScreen(), AddExpenseScreen(), PersonScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _tabController.index,
