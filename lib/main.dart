@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:pocket_hisab/controllers/dashboard_controller.dart';
 import 'package:pocket_hisab/controllers/emi_controller.dart';
 import 'package:pocket_hisab/controllers/hisab_controller.dart';
+import 'package:pocket_hisab/controllers/person_controller.dart';
 import 'package:pocket_hisab/controllers/salary_controller.dart';
 import 'package:pocket_hisab/controllers/transaction_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
@@ -18,6 +19,7 @@ void main() {
   Get.put(SalaryController());
   Get.put(EmiController());
   Get.put(HisabController());
+  Get.put(PersonController());
   Get.put(DashboardController());
 
   runApp(const MyApp());

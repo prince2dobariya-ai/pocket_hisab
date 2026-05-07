@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_hisab/controllers/transaction_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
+import 'package:pocket_hisab/controllers/person_controller.dart';
+import 'package:pocket_hisab/controllers/hisab_controller.dart';
 import 'package:pocket_hisab/models/expense_model.dart';
+import 'package:pocket_hisab/models/hisab_model.dart';
 import 'package:pocket_hisab/constants/app_theme.dart';
+import 'package:pocket_hisab/widgets/custom_appbar.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -22,6 +26,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
   String _selectedCategory = 'Food';
   String _selectedPaymentMethod = 'Wallet';
+  String? _selectedPerson;
 
   final List<String> _categories = [
     'Food',
@@ -31,6 +36,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     'Entertainment',
     'Bills',
     'Medical',
+    'Friend',
     'Others',
   ];
 
@@ -76,6 +82,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(title: "Expense"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -129,6 +136,65 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 }
               },
             ),
+            if (_selectedCategory == 'Friend') ...[
+              const SizedBox(height: 24),
+              const Text(
+                "Select Friend",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              Obx(() {
+                final personCtrl = Get.find<PersonController>();
+                if (personCtrl.persons.isEmpty) {
+                  return Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.red.withOpacity(0.2)),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.red, size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "No friends found. Add them in the Hisab section first.",
+                            style: TextStyle(color: Colors.red, fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return DropdownButtonFormField<String>(
+                  value: _selectedPerson,
+                  hint: const Text("Select friend"),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    prefixIcon: const Icon(Icons.person_outline),
+                  ),
+                  items: personCtrl.persons
+                      .map(
+                        (p) => DropdownMenuItem(
+                          value: p.personName,
+                          child: Text(p.personName),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPerson = value;
+                    });
+                  },
+                );
+              }),
+            ],
             const SizedBox(height: 24),
             const Text(
               "Date",
@@ -272,6 +338,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
                   final txCtrl = Get.find<TransactionController>();
                   final walletCtrl = Get.find<WalletController>();
+                  final hisabCtrl = Get.find<HisabController>();
+
+                  // Validation for Friend category
+                  if (_selectedCategory == 'Friend' && _selectedPerson == null) {
+                    Get.snackbar("Error", "Please select a friend");
+                    return;
+                  }
 
                   // 1. Save expense to database
                   await txCtrl.addExpense(
@@ -285,14 +358,32 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     ),
                   );
 
-                  // 2. Conditional deduction
+                  // 2. Record in Hisab if it's a friend expense
+                  if (_selectedCategory == 'Friend') {
+                    await hisabCtrl.addHisab(
+                      HisabModel(
+                        personName: _selectedPerson!,
+                        type: 'given',
+                        amount: amount,
+                        amountPaid: 0.0,
+                        remainingAmount: amount,
+                        status: 'pending',
+                        note: _noteController.text.trim(),
+                        createdAt: DateTime.now().toIso8601String(),
+                      ),
+                    );
+                  }
+
+                  // 3. Conditional deduction from Wallet
                   if (_selectedPaymentMethod == 'Wallet') {
                     if (walletCtrl.wallets.isNotEmpty) {
                       final walletId = walletCtrl.wallets.first.id!;
                       await walletCtrl.debit(
                         walletId: walletId,
                         amount: amount,
-                        source: 'Expense: $_selectedCategory',
+                        source: _selectedCategory == 'Friend'
+                            ? 'Lent to $_selectedPerson'
+                            : 'Expense: $_selectedCategory',
                         note: _noteController.text.trim().isNotEmpty
                             ? _noteController.text.trim()
                             : 'Paid via Wallet',
@@ -305,7 +396,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     }
                   }
 
-                  // Get.back();
+                  Get.back();
                 },
                 child: const Text(
                   "Save Expense",

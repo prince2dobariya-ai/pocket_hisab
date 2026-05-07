@@ -4,6 +4,8 @@ import 'package:pocket_hisab/screens/expense/add_expense_screen.dart';
 import 'package:pocket_hisab/screens/hisab/person_screen.dart';
 import 'package:pocket_hisab/screens/hisab/hisab_transaction_screen.dart';
 import 'package:pocket_hisab/screens/home/home_screen.dart';
+import 'package:pocket_hisab/screens/home/widgets/wallet_card.dart';
+import 'package:pocket_hisab/screens/wallet/wallet_screen.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
 
 class HomeMain extends StatefulWidget {
@@ -37,12 +39,14 @@ class _HomeMainState extends State<HomeMain>
       body: TabBarView(
         controller: _tabController,
         physics: const NeverScrollableScrollPhysics(),
-        children: [HomeScreen(), AddExpenseScreen(), PersonScreen()],
+        children: [HomeScreen(), WalletScreen(), PersonScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _tabController.index,
         onTap: (value) {
-          _tabController.animateTo(value);
+          setState(() {
+            _tabController.animateTo(value);
+          });
         },
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: TextStyle(
@@ -51,7 +55,7 @@ class _HomeMainState extends State<HomeMain>
         ),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: "Expense"),
+          BottomNavigationBarItem(icon: Icon(Icons.wallet), label: "Wallet"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Hisab"),
         ],
       ),
