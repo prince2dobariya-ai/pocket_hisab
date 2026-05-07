@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pocket_hisab/controllers/salary_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/controllers/emi_controller.dart';
+import 'package:pocket_hisab/controllers/transaction_controller.dart';
 import 'package:pocket_hisab/models/salary_model.dart';
 import 'package:pocket_hisab/widgets/custome_textform_filed.dart';
 
@@ -15,15 +16,18 @@ class SalaryCard extends StatelessWidget {
     final salaryCtrl = Get.find<SalaryController>();
     final walletCtrl = Get.find<WalletController>();
     final emiCtrl = Get.find<EmiController>();
+    final expenseCtrl = Get.find<TransactionController>();
 
     return Obx(() {
       final latestSalary = salaryCtrl.latestSalary?.amount ?? 0.0;
-      final month = salaryCtrl.latestSalary?.month == null?
-          DateFormat('MMM').format(DateTime.now()) : DateTime.now().month.toString();
+      final month = salaryCtrl.latestSalary?.month == null
+          ? DateFormat('MMM').format(DateTime.now())
+          : DateTime.now().month.toString();
       final walletAdded = walletCtrl.totalAddedFromSalary;
       final emiPaid = emiCtrl.totalMonthlyEmi;
+      final salarySpent = expenseCtrl.totalSalaryExpenses;
 
-      final salaryLeft = latestSalary - walletAdded - emiPaid;
+      final salaryLeft = latestSalary - walletAdded - emiPaid - salarySpent;
 
       final percentage = latestSalary > 0 ? (salaryLeft / latestSalary) : 0.0;
       final displayPercent = (percentage * 100)
@@ -235,7 +239,7 @@ class _AddSalaryBottomSheetState extends State<_AddSalaryBottomSheet> {
         left: 16.0,
         right: 16.0,
         top: 24.0,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
+        bottom: MediaQuery.of(context).padding.bottom + 16.0,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

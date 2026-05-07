@@ -57,6 +57,10 @@ class TransactionController extends GetxController {
 
   double get totalExpenses => expenses.fold(0.0, (sum, e) => sum + e.amount);
 
+  double get totalSalaryExpenses => expenses
+      .where((e) => e.paymentMethod == 'Salary')
+      .fold(0.0, (sum, e) => sum + e.amount);
+
   Map<String, double> get expensesByCategory {
     final Map<String, double> map = {};
     for (final e in expenses) {

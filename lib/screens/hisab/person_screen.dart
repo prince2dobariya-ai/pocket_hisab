@@ -17,7 +17,7 @@ class PersonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    body: RefreshIndicator(
+      body: RefreshIndicator(
         onRefresh: () => personController.fetchAll(),
         child: Column(
           children: [
@@ -40,9 +40,7 @@ class PersonScreen extends StatelessWidget {
                       color: Colors.grey,
                     ),
                     Obx(
-                      () => Text(
-                        '${personController.persons.length} Persons',
-                      ),
+                      () => Text('${personController.persons.length} Persons'),
                     ),
                   ],
                 ),
@@ -58,17 +56,13 @@ class PersonScreen extends StatelessWidget {
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: .end,
-                    children: [
-                      AppText(netBalance,),
-                      AppText(balanceText),
-                    ],
+                    children: [AppText(netBalance), AppText(balanceText)],
                   );
                 }),
               ),
             ),
             Obx(() {
-              int itemCount =
-                  personController.persons.length; // +1 for the ad
+              int itemCount = personController.persons.length; // +1 for the ad
               if (personController.persons.isEmpty) {
                 return const Expanded(
                   child: Center(
@@ -114,15 +108,16 @@ class PersonScreen extends StatelessWidget {
                     //     ? Colors.green
                     //     : Colors.red;
                     return ListTile(
-                      onTap: () => Get.to(() => HisabScreen(),),
+                      onTap: () => Get.to(() => HisabScreen()),
                       title: Text(person.personName),
                       leading: CircleAvatar(
                         child: Text(
-                          person.personName.substring(0, 1).toUpperCase()),
+                          person.personName.substring(0, 1).toUpperCase(),
+                        ),
                       ),
                       subtitle: AppText(
-                              "Added on ${DateFormat('dd MMM, yyyy').format(DateTime.parse(person.createdAt))}",
-                            ),
+                        "Added on ${DateFormat('dd MMM, yyyy').format(DateTime.parse(person.createdAt))}",
+                      ),
                       trailing: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -139,18 +134,19 @@ class PersonScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(onPressed: (){
-        Get.bottomSheet(
-          _AddPersonBottomSheet(),
-          isScrollControlled: true,
-          backgroundColor: Colors.white,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(20),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Get.bottomSheet(
+            _AddPersonBottomSheet(),
+            isScrollControlled: false,
+            backgroundColor: AppColors.bottomSheet,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
-          ),
-        );
-      }, label: AppText('+Add Person')),
+          );
+        },
+        label: AppText('+Add Person'),
+      ),
     );
   }
 }
@@ -176,19 +172,16 @@ class _AddPersonBottomSheetState extends State<_AddPersonBottomSheet> {
         left: 16.0,
         right: 16.0,
         top: 24.0,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
+        bottom: MediaQuery.of(context).padding.bottom + 16.0,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: .min,
+        crossAxisAlignment: .start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
-              const Text(
-                "Add Person",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+              const AppText("Add Person"),
               IconButton(
                 onPressed: () => Get.back(),
                 icon: const Icon(Icons.close),
@@ -196,16 +189,12 @@ class _AddPersonBottomSheetState extends State<_AddPersonBottomSheet> {
             ],
           ),
           const SizedBox(height: 16),
-          const HeadingText("Person Name"),
-          const SizedBox(height: 8),
           CustomTextField(
             controller: _personName,
             keyboardType: .text,
             labelText: "Person Name",
-            hintText: "Enter name"
+            hintText: "Enter name",
           ),
-          const SizedBox(height: 16),
-          const HeadingText("Select Month"),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,

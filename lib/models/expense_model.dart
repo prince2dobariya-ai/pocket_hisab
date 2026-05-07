@@ -5,6 +5,7 @@ class ExpenseModel {
   final String? note;
   final String date;
   final String createdAt;
+  final String paymentMethod;
 
   ExpenseModel({
     this.id,
@@ -13,6 +14,7 @@ class ExpenseModel {
     this.note,
     required this.date,
     required this.createdAt,
+    this.paymentMethod = 'Salary',
   });
 
   Map<String, dynamic> toMap() {
@@ -23,6 +25,7 @@ class ExpenseModel {
       'note': note,
       'date': date,
       'created_at': createdAt,
+      'payment_method': paymentMethod,
     };
   }
 
@@ -34,6 +37,7 @@ class ExpenseModel {
       note: map['note'] as String?,
       date: map['date'] as String,
       createdAt: map['created_at'] as String,
+      paymentMethod: map['payment_method'] as String? ?? 'Salary',
     );
   }
 
@@ -44,6 +48,7 @@ class ExpenseModel {
     String? note,
     String? date,
     String? createdAt,
+    String? paymentMethod,
   }) {
     return ExpenseModel(
       id: id ?? this.id,
@@ -52,6 +57,7 @@ class ExpenseModel {
       note: note ?? this.note,
       date: date ?? this.date,
       createdAt: createdAt ?? this.createdAt,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
     );
   }
 }

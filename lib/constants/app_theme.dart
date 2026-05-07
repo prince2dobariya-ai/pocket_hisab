@@ -28,6 +28,15 @@ class AppColors {
   // Dark Theme
   static const Color darkBackground = Color(0xFF0F172A);
   static const Color darkCard = Color(0xFF1E293B);
+
+  // Button Colors
+  static const Color success = Color(0xFF10B981);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color danger = Color(0xFFEF4444);
+
+  // bottomsheet
+  static const Color bottomSheet = Color(0xFFF8FAFC);
+  static const Color bottomSheetDark = Color(0xFF1E293B);
 }
 
 class AppTheme {
@@ -38,7 +47,9 @@ class AppTheme {
     brightness: Brightness.light,
 
     scaffoldBackgroundColor: AppColors.background,
-
+    // bottomSheetTheme: const BottomSheetThemeData(
+    // backgroundColor: AppColors.bottomSheet,
+    // ),
     colorScheme: ColorScheme.light(
       primary: AppColors.primary,
       secondary: AppColors.secondary,
@@ -62,9 +73,7 @@ class AppTheme {
       color: AppColors.card,
       elevation: 1,
       shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -72,13 +81,8 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
@@ -91,36 +95,23 @@ class AppTheme {
       filled: true,
       fillColor: Colors.white,
 
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 16,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
 
-      hintStyle: const TextStyle(
-        color: AppColors.textLight,
-        fontSize: 14,
-      ),
+      hintStyle: const TextStyle(color: AppColors.textLight, fontSize: 14),
 
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(
-          color: AppColors.border,
-        ),
+        borderSide: const BorderSide(color: AppColors.border),
       ),
 
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(
-          color: AppColors.primary,
-          width: 1.5,
-        ),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
       ),
 
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(
-          color: Colors.red,
-        ),
+        borderSide: const BorderSide(color: Colors.red),
       ),
     ),
 
@@ -143,15 +134,9 @@ class AppTheme {
         color: AppColors.textDark,
       ),
 
-      bodyLarge: TextStyle(
-        fontSize: 16,
-        color: AppColors.textDark,
-      ),
+      bodyLarge: TextStyle(fontSize: 16, color: AppColors.textDark),
 
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        color: AppColors.textLight,
-      ),
+      bodyMedium: TextStyle(fontSize: 14, color: AppColors.textLight),
     ),
 
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -182,13 +167,13 @@ class AppTheme {
       elevation: 0,
       centerTitle: true,
     ),
-
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: AppColors.bottomSheetDark,
+    ),
     cardTheme: CardThemeData(
       color: AppColors.darkCard,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -196,14 +181,9 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
 
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
 
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     ),
 
@@ -211,24 +191,16 @@ class AppTheme {
       filled: true,
       fillColor: AppColors.darkCard,
 
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 16,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
 
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(
-          color: Colors.grey.shade800,
-        ),
+        borderSide: BorderSide(color: Colors.grey.shade800),
       ),
 
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(
-          color: AppColors.primary,
-          width: 1.5,
-        ),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
       ),
     ),
 
@@ -245,15 +217,9 @@ class AppTheme {
         color: Colors.white,
       ),
 
-      bodyLarge: TextStyle(
-        fontSize: 16,
-        color: Colors.white,
-      ),
+      bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
 
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        color: Colors.white70,
-      ),
+      bodyMedium: TextStyle(fontSize: 14, color: Colors.white70),
     ),
   );
 }

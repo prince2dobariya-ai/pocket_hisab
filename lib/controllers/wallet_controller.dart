@@ -21,7 +21,18 @@ class WalletController extends GetxController {
   Future<void> fetchAll() async {
     isLoading.value = true;
     final walletRows = await _db.getAll(_walletsTable);
-    wallets.value = walletRows.map(WalletModel.fromMap).toList();
+
+    if (walletRows.isEmpty) {
+      // Create a default wallet if none exist
+      final defaultWallet = WalletModel(
+        walletName: "Main Wallet",
+        balance: 0.0,
+        createdAt: DateTime.now().toIso8601String(),
+      );
+      await addWallet(defaultWallet);
+    } else {
+      wallets.value = walletRows.map(WalletModel.fromMap).toList();
+    }
 
     final txRows = await _db.getAll(_txTable);
     transactions.value = txRows.map(TransactionModel.fromMap).toList();

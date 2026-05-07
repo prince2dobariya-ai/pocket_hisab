@@ -29,7 +29,8 @@ class DatabaseService {
         amount REAL NOT NULL,
         note TEXT,
         date TEXT NOT NULL,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        payment_method TEXT NOT NULL DEFAULT 'Salary'
       )
     ''');
 
@@ -104,7 +105,8 @@ class DatabaseService {
     await db.execute('''
     CREATE TABLE persons (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      person_name TEXT NOT NULL
+      person_name TEXT NOT NULL,
+      created_at TEXT NOT NULL
     )
     ''');
   }

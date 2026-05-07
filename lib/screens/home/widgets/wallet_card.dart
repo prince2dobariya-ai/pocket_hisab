@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
-import 'package:pocket_hisab/screens/add_wallet_money_screen.dart';
+import 'package:pocket_hisab/screens/wallet/add_wallet_money_screen.dart';
 
 class WalletCard extends StatelessWidget {
   const WalletCard({super.key});

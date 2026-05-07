@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:pocket_hisab/controllers/transaction_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/models/expense_model.dart';
-import 'package:pocket_hisab/widgets/custom_appbar.dart';
+import 'package:pocket_hisab/constants/app_theme.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -21,7 +21,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   );
 
   String _selectedCategory = 'Food';
-  String _selectedPaymentMethod = 'Cash';
+  String _selectedPaymentMethod = 'Wallet';
 
   final List<String> _categories = [
     'Food',
@@ -34,7 +34,22 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     'Others',
   ];
 
-  final List<String> _paymentMethods = ['Cash', 'Bank', 'Wallet'];
+  final List<String> _paymentMethods = ['Wallet', 'Salary'];
+
+  IconData _getPaymentMethodIcon(String method) {
+    switch (method) {
+      case 'Cash':
+        return Icons.money;
+      case 'Bank':
+        return Icons.account_balance;
+      case 'Wallet':
+        return Icons.account_balance_wallet;
+      case 'Salary':
+        return Icons.payments_outlined;
+      default:
+        return Icons.payment;
+    }
+  }
 
   @override
   void dispose() {
@@ -140,30 +155,75 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: _selectedPaymentMethod,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: _paymentMethods.map((method) {
+                final isSelected = _selectedPaymentMethod == method;
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      _selectedPaymentMethod = method;
+                    });
+                  },
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-                prefixIcon: const Icon(Icons.payment_outlined),
-              ),
-              items: _paymentMethods
-                  .map(
-                    (method) =>
-                        DropdownMenuItem(value: method, child: Text(method)),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    _selectedPaymentMethod = value;
-                  });
-                }
-              },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primary
+                            : Colors.grey.shade300,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        if (isSelected)
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          )
+                        else
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.03),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _getPaymentMethodIcon(method),
+                          color: isSelected
+                              ? Colors.white
+                              : Colors.grey.shade600,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          method,
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.grey.shade800,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
             const SizedBox(height: 24),
             const Text(
@@ -221,28 +281,31 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       note: _noteController.text.trim(),
                       date: _dateController.text,
                       createdAt: DateTime.now().toIso8601String(),
+                      paymentMethod: _selectedPaymentMethod,
                     ),
                   );
 
-                  // 2. Deduct from wallet
-                  if (walletCtrl.wallets.isNotEmpty) {
-                    final walletId = walletCtrl.wallets.first.id!;
-                    await walletCtrl.debit(
-                      walletId: walletId,
-                      amount: amount,
-                      source: 'Expense: $_selectedCategory',
-                      note: _noteController.text.trim().isNotEmpty
-                          ? _noteController.text.trim()
-                          : 'Paid via $_selectedPaymentMethod',
-                    );
-                  } else {
-                    Get.snackbar(
-                      "Info",
-                      "Expense recorded, but no wallet found to update balance.",
-                    );
+                  // 2. Conditional deduction
+                  if (_selectedPaymentMethod == 'Wallet') {
+                    if (walletCtrl.wallets.isNotEmpty) {
+                      final walletId = walletCtrl.wallets.first.id!;
+                      await walletCtrl.debit(
+                        walletId: walletId,
+                        amount: amount,
+                        source: 'Expense: $_selectedCategory',
+                        note: _noteController.text.trim().isNotEmpty
+                            ? _noteController.text.trim()
+                            : 'Paid via Wallet',
+                      );
+                    } else {
+                      Get.snackbar(
+                        "Info",
+                        "Expense recorded, but no wallet found to update balance.",
+                      );
+                    }
                   }
 
-                  Get.back();
+                  // Get.back();
                 },
                 child: const Text(
                   "Save Expense",
