@@ -19,6 +19,7 @@ class HisabController extends GetxController {
     isLoading.value = true;
     final rows = await _db.getAll(_table);
     hisabs.value = rows.map(HisabModel.fromMap).toList();
+    print(rows);
     isLoading.value = false;
   }
 

@@ -30,7 +30,7 @@ class DatabaseService {
         note TEXT,
         date TEXT NOT NULL,
         created_at TEXT NOT NULL,
-        payment_method TEXT NOT NULL DEFAULT 'Salary'
+        payment_method TEXT NOT NULL DEFAULT 'Wallet'
       )
     ''');
 
