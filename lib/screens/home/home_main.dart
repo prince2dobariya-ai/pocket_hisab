@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_hisab/screens/drawer/home_drawer.dart';
-import 'package:pocket_hisab/screens/expense/add_expense_screen.dart';
 import 'package:pocket_hisab/screens/hisab/person_screen.dart';
-import 'package:pocket_hisab/screens/hisab/hisab_transaction_screen.dart';
 import 'package:pocket_hisab/screens/home/home_screen.dart';
-import 'package:pocket_hisab/screens/home/widgets/wallet_card.dart';
 import 'package:pocket_hisab/screens/wallet/wallet_screen.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
 

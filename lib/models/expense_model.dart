@@ -14,7 +14,7 @@ class ExpenseModel {
     this.note,
     required this.date,
     required this.createdAt,
-    this.paymentMethod = 'Salary',
+    this.paymentMethod = 'Wallet',
   });
 
   Map<String, dynamic> toMap() {
@@ -37,7 +37,7 @@ class ExpenseModel {
       note: map['note'] as String?,
       date: map['date'] as String,
       createdAt: map['created_at'] as String,
-      paymentMethod: map['payment_method'] as String? ?? 'Salary',
+      paymentMethod: map['payment_method'] as String? ?? 'Wallet',
     );
   }
 

@@ -6,22 +6,35 @@ import 'package:pocket_hisab/models/hisab_model.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
 
 class AddHisabScreen extends StatefulWidget {
-  const AddHisabScreen({super.key});
+  final String? personName;
+  final bool? isBorrowed;
+
+  const AddHisabScreen({super.key, this.personName, this.isBorrowed});
 
   @override
   State<AddHisabScreen> createState() => _AddHisabScreenState();
 }
 
 class _AddHisabScreenState extends State<AddHisabScreen> {
-  final _amountController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _noteController = TextEditingController();
-  final _dateController = TextEditingController(
-    text:
-        "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
-  );
+  late final TextEditingController _amountController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _noteController;
+  late final TextEditingController _dateController;
 
-  bool _isBorrowed = true; // true = Borrowed (Taken), false = Lent (Given)
+  late bool _isBorrowed;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController = TextEditingController();
+    _nameController = TextEditingController(text: widget.personName);
+    _noteController = TextEditingController();
+    _dateController = TextEditingController(
+      text:
+          "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+    );
+    _isBorrowed = widget.isBorrowed ?? true;
+  }
 
   @override
   void dispose() {
@@ -70,13 +83,13 @@ class _AddHisabScreenState extends State<AddHisabScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: _isBorrowed
-                              ? Colors.red.shade400
+                              ? Colors.green.shade400
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Center(
                           child: Text(
-                            "Borrowed (Taken)",
+                            "Received (Borrowed)",
                             style: TextStyle(
                               color: _isBorrowed
                                   ? Colors.white
@@ -95,13 +108,13 @@ class _AddHisabScreenState extends State<AddHisabScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: !_isBorrowed
-                              ? Colors.green.shade400
+                              ? Colors.red.shade400
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Center(
                           child: Text(
-                            "Lent (Given)",
+                            "Given (Lent)",
                             style: TextStyle(
                               color: !_isBorrowed
                                   ? Colors.white
@@ -207,8 +220,8 @@ class _AddHisabScreenState extends State<AddHisabScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _isBorrowed
-                      ? Colors.red.shade400
-                      : Colors.green.shade400,
+                      ? Colors.green.shade400
+                      : Colors.red.shade400,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
