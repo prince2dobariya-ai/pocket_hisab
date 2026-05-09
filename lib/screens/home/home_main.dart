@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_hisab/screens/drawer/home_drawer.dart';
+import 'package:pocket_hisab/constants/app_theme.dart';
+import 'package:pocket_hisab/screens/expense/add_expense_screen.dart';
 import 'package:pocket_hisab/screens/hisab/person_screen.dart';
 import 'package:pocket_hisab/screens/home/home_screen.dart';
+import 'package:pocket_hisab/screens/settings/setting_screen.dart';
 import 'package:pocket_hisab/screens/wallet/wallet_screen.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
+import 'package:get/get.dart';
 
 class HomeMain extends StatefulWidget {
   const HomeMain({super.key});
@@ -31,29 +34,82 @@ class _HomeMainState extends State<HomeMain>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: HomeDrawer(),
-      appBar: CustomAppBar(title: "Khissu"),
+      appBar: CustomAppBar(
+        title: "Khissu",
+        actions: [
+          IconButton(
+            onPressed: () {
+              Get.to(() => SettingScreen());
+            },
+            icon: Icon(Icons.settings),
+          ),
+        ],
+      ),
       body: TabBarView(
         controller: _tabController,
         children: [HomeScreen(), WalletScreen(), PersonScreen()],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _tabController.index,
-        onTap: (value) {
-          setState(() {
-            _tabController.animateTo(value);
-          });
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(() => AddExpenseScreen());
         },
-        type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+        child: Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: .endContained,
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 6,
+        child: Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _tabController.animateTo(0);
+                });
+              },
+              icon: Icon(
+                Icons.home,
+                size: 28,
+                color: _tabController.index == 0
+                    ? AppColors.primary
+                    : Colors.grey,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _tabController.animateTo(1);
+                });
+              },
+              icon: Icon(
+                Icons.wallet,
+                size: 28,
+                color: _tabController.index == 1
+                    ? AppColors.primary
+                    : Colors.grey,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _tabController.animateTo(2);
+                });
+              },
+              icon: Icon(
+                Icons.person,
+                size: 28,
+                color: _tabController.index == 2
+                    ? AppColors.primary
+                    : Colors.grey,
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.person, color: Colors.transparent),
+            ),
+          ],
         ),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.wallet), label: "Wallet"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Hisab"),
-        ],
       ),
     );
   }
