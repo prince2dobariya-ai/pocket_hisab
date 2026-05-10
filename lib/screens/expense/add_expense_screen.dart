@@ -8,6 +8,7 @@ import 'package:pocket_hisab/models/expense_model.dart';
 import 'package:pocket_hisab/models/hisab_model.dart';
 import 'package:pocket_hisab/constants/app_theme.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
+import 'package:pocket_hisab/widgets/custom_button.dart';
 import 'package:pocket_hisab/widgets/custome_textform_filed.dart';
 
 class AddExpenseScreen extends StatefulWidget {
@@ -281,99 +282,81 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               minLine: 3,
               maxLine: 3,),
             const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber.shade700,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+            CustomButton(title: "Save Expense", onTap: ()async{
+              final amountText = _amountController.text.trim();
+              if (amountText.isEmpty) {
+                Get.snackbar("Error", "Please enter amount");
+                return;
+              }
+
+              final amount = double.tryParse(amountText);
+              if (amount == null || amount <= 0) {
+                Get.snackbar("Error", "Invalid amount entered");
+                return;
+              }
+
+              final txCtrl = Get.find<TransactionController>();
+              final walletCtrl = Get.find<WalletController>();
+              final hisabCtrl = Get.find<HisabController>();
+
+              // Validation for Friend category
+              if (_selectedCategory == 'Friend' && _selectedPerson == null) {
+                Get.snackbar("Error", "Please select a friend");
+                return;
+              }
+
+              // 1. Save expense to database
+              await txCtrl.addExpense(
+                ExpenseModel(
+                  category: _selectedCategory,
+                  amount: amount,
+                  note: _noteController.text.trim(),
+                  date: _dateController.text,
+                  createdAt: DateTime.now().toIso8601String(),
+                  paymentMethod: _selectedPaymentMethod,
+                ),
+              );
+
+              // 2. Record in Hisab if it's a friend expense
+              if (_selectedCategory == 'Friend') {
+                await hisabCtrl.addHisab(
+                  HisabModel(
+                    personName: _selectedPerson!,
+                    type: 'given',
+                    amount: amount,
+                    amountPaid: 0.0,
+                    remainingAmount: amount,
+                    status: 'pending',
+                    note: _noteController.text.trim(),
+                    createdAt: DateTime.now().toIso8601String(),
                   ),
-                ),
-                onPressed: () async {
-                  final amountText = _amountController.text.trim();
-                  if (amountText.isEmpty) {
-                    Get.snackbar("Error", "Please enter amount");
-                    return;
-                  }
+                );
+              }
 
-                  final amount = double.tryParse(amountText);
-                  if (amount == null || amount <= 0) {
-                    Get.snackbar("Error", "Invalid amount entered");
-                    return;
-                  }
-
-                  final txCtrl = Get.find<TransactionController>();
-                  final walletCtrl = Get.find<WalletController>();
-                  final hisabCtrl = Get.find<HisabController>();
-
-                  // Validation for Friend category
-                  if (_selectedCategory == 'Friend' && _selectedPerson == null) {
-                    Get.snackbar("Error", "Please select a friend");
-                    return;
-                  }
-
-                  // 1. Save expense to database
-                  await txCtrl.addExpense(
-                    ExpenseModel(
-                      category: _selectedCategory,
-                      amount: amount,
-                      note: _noteController.text.trim(),
-                      date: _dateController.text,
-                      createdAt: DateTime.now().toIso8601String(),
-                      paymentMethod: _selectedPaymentMethod,
-                    ),
+              // 3. Conditional deduction from Wallet
+              if (_selectedPaymentMethod == 'Wallet') {
+                if (walletCtrl.wallets.isNotEmpty) {
+                  final walletId = walletCtrl.wallets.first.id!;
+                  await walletCtrl.debit(
+                    walletId: walletId,
+                    amount: amount,
+                    source: _selectedCategory == 'Friend'
+                        ? 'Lent to $_selectedPerson'
+                        : 'Expense: $_selectedCategory',
+                    note: _noteController.text.trim().isNotEmpty
+                        ? _noteController.text.trim()
+                        : 'Paid via Wallet',
                   );
+                } else {
+                  Get.snackbar(
+                    "Info",
+                    "Expense recorded, but no wallet found to update balance.",
+                  );
+                }
+              }
 
-                  // 2. Record in Hisab if it's a friend expense
-                  if (_selectedCategory == 'Friend') {
-                    await hisabCtrl.addHisab(
-                      HisabModel(
-                        personName: _selectedPerson!,
-                        type: 'given',
-                        amount: amount,
-                        amountPaid: 0.0,
-                        remainingAmount: amount,
-                        status: 'pending',
-                        note: _noteController.text.trim(),
-                        createdAt: DateTime.now().toIso8601String(),
-                      ),
-                    );
-                  }
-
-                  // 3. Conditional deduction from Wallet
-                  if (_selectedPaymentMethod == 'Wallet') {
-                    if (walletCtrl.wallets.isNotEmpty) {
-                      final walletId = walletCtrl.wallets.first.id!;
-                      await walletCtrl.debit(
-                        walletId: walletId,
-                        amount: amount,
-                        source: _selectedCategory == 'Friend'
-                            ? 'Lent to $_selectedPerson'
-                            : 'Expense: $_selectedCategory',
-                        note: _noteController.text.trim().isNotEmpty
-                            ? _noteController.text.trim()
-                            : 'Paid via Wallet',
-                      );
-                    } else {
-                      Get.snackbar(
-                        "Info",
-                        "Expense recorded, but no wallet found to update balance.",
-                      );
-                    }
-                  }
-
-                  Get.back();
-                },
-                child: const Text(
-                  "Save Expense",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
+              Get.back();
+            }),
             const SizedBox(height: 24),
           ],
         ),

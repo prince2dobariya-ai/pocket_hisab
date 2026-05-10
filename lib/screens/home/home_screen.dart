@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_hisab/screens/home/widgets/salary_card.dart';
 import 'package:pocket_hisab/screens/home/widgets/saving_card.dart';
-import 'package:pocket_hisab/screens/home/widgets/wallet_card.dart';
+import 'package:pocket_hisab/screens/home/widgets/recent_transactions.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,6 +22,9 @@ class HomeScreen extends StatelessWidget {
 
                 /// saving card
                 SavingCard(),
+
+                /// recent transactions
+                RecentTransactions(),
               ],
             ),
           ),

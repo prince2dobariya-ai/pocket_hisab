@@ -142,12 +142,6 @@ class WalletScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Get.to(() => const AddExpenseScreen());
-        },
-        label: Text('+Add Expense'),
-      ),
     );
   }
 }

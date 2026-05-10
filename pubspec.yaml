@@ -24,8 +24,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # assets:
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/logo.webp
 
   fonts:
     - family: Poppins
