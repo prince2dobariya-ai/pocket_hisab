@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: .symmetric(horizontal: 16.0),
+          padding: const .symmetric(horizontal: 16.0),
           child: SingleChildScrollView(
             child: Column(
               spacing: 16,
@@ -25,6 +25,8 @@ class HomeScreen extends StatelessWidget {
 
                 /// recent transactions
                 RecentTransactions(),
+
+                const SizedBox(height: 24),
               ],
             ),
           ),

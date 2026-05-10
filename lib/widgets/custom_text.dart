@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_hisab/constants/app_theme.dart';
+import 'package:pocket_hisab/helpers/currency_helper.dart';
 
 class AppText extends StatelessWidget {
   final String text;
@@ -11,14 +12,14 @@ class AppText extends StatelessWidget {
   final TextAlign? textAlign;
 
   const AppText(
-      this.text, {
-        super.key,
-        this.size,
-        this.fontWeight,
-        this.color,
-        this.maxLines,
-        this.textAlign,
-      });
+    this.text, {
+    super.key,
+    this.size,
+    this.fontWeight,
+    this.color,
+    this.maxLines,
+    this.textAlign,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +40,11 @@ class AppText extends StatelessWidget {
   }
 }
 
-
 class HeadingText extends StatelessWidget {
   final String text;
   final Color? color;
 
-  const HeadingText(
-      this.text, {
-        super.key,
-        this.color,
-      });
+  const HeadingText(this.text, {super.key, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -58,34 +54,6 @@ class HeadingText extends StatelessWidget {
         fontSize: 18,
         fontWeight: FontWeight.bold,
         color: color ?? AppColors.textDark,
-        fontFamily: 'Poppins',
-      ),
-    );
-  }
-}
-
-
-class PriceText extends StatelessWidget {
-  final double amount;
-  final Color? color;
-  final double? size;
-
-  const PriceText(
-      this.amount, {
-        super.key,
-        this.color,
-        this.size,
-      });
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      "₹ ${amount.toStringAsFixed(0)}",
-
-      style: TextStyle(
-        fontSize: size ?? 20,
-        fontWeight: FontWeight.bold,
-        color: color ?? AppColors.primary,
         fontFamily: 'Poppins',
       ),
     );

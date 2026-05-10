@@ -109,8 +109,31 @@ class DatabaseService {
       created_at TEXT NOT NULL
     )
     ''');
-  }
 
+    // 8. savings
+    await db.execute('''
+      CREATE TABLE savings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        saving_name TEXT NOT NULL,
+        balance REAL NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+      )
+    ''');
+
+    // 9. saving_transactions
+    await db.execute('''
+      CREATE TABLE saving_transactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        saving_id INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        amount REAL NOT NULL,
+        source TEXT NOT NULL,
+        note TEXT,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (saving_id) REFERENCES savings (id) ON DELETE CASCADE
+      )
+    ''');
+  }
   // ─────────────────────────── Generic helpers ───────────────────────────
 
   Future<int> insert(String table, Map<String, dynamic> data) async {

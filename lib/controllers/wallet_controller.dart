@@ -1,4 +1,7 @@
 import 'package:get/get.dart';
+import 'package:pocket_hisab/controllers/salary_controller.dart';
+import 'package:pocket_hisab/controllers/saving_controller.dart';
+import 'package:pocket_hisab/helpers/currency_helper.dart';
 import 'package:pocket_hisab/models/wallet_model.dart';
 import 'package:pocket_hisab/models/transaction_model.dart';
 import 'package:pocket_hisab/services/database_service.dart';
@@ -110,6 +113,47 @@ class WalletController extends GetxController {
       final walletIdx = wallets.indexWhere((w) => w.id == walletId);
       if (walletIdx == -1) return false;
       final wallet = wallets[walletIdx];
+
+      if (type == 'credit' && source == 'Salary') {
+        final salaryCtrl = Get.find<SalaryController>();
+        final savingCtrl = Get.find<SavingController>();
+
+        final addedToSavings = savingCtrl.totalAddedFromSalary;
+
+        final available =
+            salaryCtrl.totalSalaryReceived -
+            totalAddedFromSalary -
+            addedToSavings;
+
+        if (amount > available) {
+          Get.snackbar(
+            'Error',
+            'Amount exceeds available salary (${CurrencyHelper.format(available)})',
+          );
+          return false;
+        }
+      }
+
+      if (type == 'credit' && source == 'Saving') {
+        final savingCtrl = Get.find<SavingController>();
+        if (savingCtrl.savings.isEmpty) {
+          Get.snackbar('Error', 'No savings account found to transfer from');
+          return false;
+        }
+
+        final mainSaving = savingCtrl.savings.first;
+        if (mainSaving.balance < amount) {
+          Get.snackbar('Error', 'Insufficient balance in savings');
+          return false;
+        }
+
+        await savingCtrl.debit(
+          savingId: mainSaving.id!,
+          amount: amount,
+          source: 'Transfer to Wallet',
+          note: 'Transferred to wallet',
+        );
+      }
 
       // 2. Update balance
       final newBalance = type == 'credit'

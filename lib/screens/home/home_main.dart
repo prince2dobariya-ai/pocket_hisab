@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pocket_hisab/constants/app_theme.dart';
 import 'package:pocket_hisab/screens/expense/add_expense_screen.dart';
 import 'package:pocket_hisab/screens/hisab/person_screen.dart';
@@ -7,6 +8,7 @@ import 'package:pocket_hisab/screens/settings/setting_screen.dart';
 import 'package:pocket_hisab/screens/wallet/wallet_screen.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
 import 'package:get/get.dart';
+import 'package:pocket_hisab/widgets/custom_text.dart';
 
 class HomeMain extends StatefulWidget {
   const HomeMain({super.key});
@@ -31,84 +33,148 @@ class _HomeMainState extends State<HomeMain>
     super.dispose();
   }
 
+  DateTime? lastBackPressed;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        title: "Khissu",
-        actions: [
-          IconButton(
-            onPressed: () {
-              Get.to(() => SettingScreen());
-            },
-            icon: Icon(Icons.settings),
-          ),
-        ],
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [HomeScreen(), WalletScreen(), PersonScreen()],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.to(() => AddExpenseScreen());
-        },
-        child: Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: .endContained,
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 6,
-        child: Row(
-          mainAxisAlignment: .spaceBetween,
-          children: [
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (_tabController.index != 0) {
+          _tabController.animateTo(0);
+          return;
+        }
+
+        final now = DateTime.now();
+
+        if (lastBackPressed == null ||
+            now.difference(lastBackPressed!) > const Duration(seconds: 2)) {
+          lastBackPressed = now;
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Press back again to exit'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+
+          return;
+        }
+
+        SystemNavigator.pop();
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          title: "Khissu",
+          actions: [
             IconButton(
               onPressed: () {
-                setState(() {
-                  _tabController.animateTo(0);
-                });
+                Get.to(() => SettingScreen());
               },
-              icon: Icon(
-                Icons.home,
-                size: 28,
-                color: _tabController.index == 0
-                    ? AppColors.primary
-                    : Colors.grey,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _tabController.animateTo(1);
-                });
-              },
-              icon: Icon(
-                Icons.wallet,
-                size: 28,
-                color: _tabController.index == 1
-                    ? AppColors.primary
-                    : Colors.grey,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _tabController.animateTo(2);
-                });
-              },
-              icon: Icon(
-                Icons.person,
-                size: 28,
-                color: _tabController.index == 2
-                    ? AppColors.primary
-                    : Colors.grey,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.person, color: Colors.transparent),
+              icon: Icon(Icons.settings),
             ),
           ],
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          physics: NeverScrollableScrollPhysics(),
+          children: [HomeScreen(), WalletScreen(), PersonScreen()],
+        ),
+        floatingActionButton: FloatingActionButton(
+          tooltip: 'Expense',
+          heroTag: 'expense',
+          onPressed: () {
+            Get.to(() => AddExpenseScreen());
+          },
+          child: Icon(Icons.add, size: 34),
+        ),
+        floatingActionButtonLocation: .endContained,
+        bottomNavigationBar: BottomAppBar(
+          shape: CircularNotchedRectangle(),
+          notchMargin: 6,
+          height: 82,
+          padding: .symmetric(vertical: 4, horizontal: 16),
+          child: Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _tabController.animateTo(0);
+                  });
+                },
+                icon: Column(
+                  children: [
+                    Icon(
+                      Icons.dashboard_outlined,
+                      size: 34,
+                      color: _tabController.index == 0
+                          ? AppColors.primary
+                          : Colors.grey,
+                    ),
+                    AppText(
+                      'Home',
+                      color: _tabController.index == 0
+                          ? AppColors.primary
+                          : Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _tabController.animateTo(1);
+                  });
+                },
+                icon: Column(
+                  children: [
+                    Icon(
+                      Icons.account_balance_wallet_outlined,
+                      size: 34,
+                      color: _tabController.index == 1
+                          ? AppColors.primary
+                          : Colors.grey,
+                    ),
+                    AppText(
+                      'Wallet',
+                      color: _tabController.index == 1
+                          ? AppColors.primary
+                          : Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _tabController.animateTo(2);
+                  });
+                },
+                icon: Column(
+                  children: [
+                    Icon(
+                      Icons.group_outlined,
+                      size: 34,
+                      color: _tabController.index == 2
+                          ? AppColors.primary
+                          : Colors.grey,
+                    ),
+                    AppText(
+                      'Hisabs',
+                      color: _tabController.index == 2
+                          ? AppColors.primary
+                          : Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.person, color: Colors.transparent),
+              ),
+            ],
+          ),
         ),
       ),
     );

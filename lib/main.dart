@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pocket_hisab/controllers/dashboard_controller.dart';
 import 'package:pocket_hisab/controllers/emi_controller.dart';
@@ -7,20 +8,33 @@ import 'package:pocket_hisab/controllers/person_controller.dart';
 import 'package:pocket_hisab/controllers/salary_controller.dart';
 import 'package:pocket_hisab/controllers/transaction_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
+import 'package:pocket_hisab/controllers/settings_controller.dart';
+import 'package:pocket_hisab/controllers/saving_controller.dart';
 import 'package:pocket_hisab/screens/home/home_main.dart';
 import 'package:pocket_hisab/constants/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemStatusBarContrastEnforced: false,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      systemNavigationBarContrastEnforced: false,
+    ),
+  );
   // Initialize Controllers
   Get.put(TransactionController());
   Get.put(WalletController());
   Get.put(SalaryController());
   Get.put(EmiController());
   Get.put(HisabController());
+  Get.put(SavingController());
   Get.put(PersonController());
   Get.put(DashboardController());
+  Get.put(SettingsController());
 
   runApp(const MyApp());
 }

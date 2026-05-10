@@ -5,6 +5,8 @@ import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/helpers/currency_helper.dart';
 import 'package:pocket_hisab/models/expense_model.dart';
 import 'package:pocket_hisab/models/transaction_model.dart';
+import 'package:pocket_hisab/controllers/saving_controller.dart';
+import 'package:pocket_hisab/models/saving_transaction_model.dart';
 import 'package:pocket_hisab/screens/home/all_transactions_screen.dart';
 import 'package:intl/intl.dart';
 
@@ -37,13 +39,17 @@ class RecentTransactions extends StatelessWidget {
         ),
         Obx(() {
           final walletCtrl = Get.find<WalletController>();
-          if (txCtrl.isLoading.value || walletCtrl.isLoading.value) {
+          final savingCtrl = Get.find<SavingController>();
+          if (txCtrl.isLoading.value ||
+              walletCtrl.isLoading.value ||
+              savingCtrl.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
 
           final mergedItems = _getMergedTransactions(
             txCtrl.expenses,
             walletCtrl.transactions,
+            savingCtrl.transactions,
           );
 
           if (mergedItems.isEmpty) {
@@ -100,6 +106,7 @@ class RecentTransactions extends StatelessWidget {
   List<_MergedTransaction> _getMergedTransactions(
     List<ExpenseModel> expenses,
     List<TransactionModel> walletTxs,
+    List<SavingTransactionModel> savingTxs,
   ) {
     List<_MergedTransaction> merged = [];
 
@@ -146,6 +153,28 @@ class RecentTransactions extends StatelessWidget {
           ),
         );
       }
+    }
+
+    // Add Saving Transactions (skip Wallet transfers to avoid duplicates with wallet debit)
+    for (var t in savingTxs) {
+      if (t.source == 'Wallet') continue;
+
+      DateTime dt = DateTime.parse(t.createdAt);
+      merged.add(
+        _MergedTransaction(
+          id: 'sav_${t.id}',
+          title: 'Saving (${t.source})',
+          subtitle: t.note,
+          amount: t.amount,
+          isCredit: t.type == 'credit',
+          dateTime: dt,
+          displayDate: DateFormat('d/M/yyyy').format(dt),
+          icon: t.type == 'credit'
+              ? Icons.savings_outlined
+              : Icons.money_off_outlined,
+          color: t.type == 'credit' ? Colors.teal : Colors.deepOrange,
+        ),
+      );
     }
 
     // Sort by most recent first

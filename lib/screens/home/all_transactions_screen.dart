@@ -6,6 +6,8 @@ import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/helpers/currency_helper.dart';
 import 'package:pocket_hisab/models/expense_model.dart';
 import 'package:pocket_hisab/models/transaction_model.dart';
+import 'package:pocket_hisab/controllers/saving_controller.dart';
+import 'package:pocket_hisab/models/saving_transaction_model.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
 
 class AllTransactionsScreen extends StatelessWidget {
@@ -19,11 +21,18 @@ class AllTransactionsScreen extends StatelessWidget {
       appBar: CustomAppBar(title: "All Transactions"),
       body: Obx(() {
         final walletCtrl = Get.find<WalletController>();
-        if (txCtrl.isLoading.value || walletCtrl.isLoading.value) {
+        final savingCtrl = Get.find<SavingController>();
+        if (txCtrl.isLoading.value ||
+            walletCtrl.isLoading.value ||
+            savingCtrl.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final mergedItems = _getMergedTransactions(txCtrl.expenses, walletCtrl.transactions);
+        final mergedItems = _getMergedTransactions(
+          txCtrl.expenses,
+          walletCtrl.transactions,
+          savingCtrl.transactions,
+        );
 
         if (mergedItems.isEmpty) {
           return const Center(child: Text("No transactions found"));
@@ -71,39 +80,70 @@ class AllTransactionsScreen extends StatelessWidget {
   }
 
   List<_AllMergedTransaction> _getMergedTransactions(
-      List<ExpenseModel> expenses, List<TransactionModel> walletTxs) {
+    List<ExpenseModel> expenses,
+    List<TransactionModel> walletTxs,
+    List<SavingTransactionModel> savingTxs,
+  ) {
     List<_AllMergedTransaction> merged = [];
 
     for (var e in expenses) {
-      merged.add(_AllMergedTransaction(
-        title: e.category,
-        subtitle: e.note,
-        amount: e.amount,
-        isCredit: false,
-        dateTime: DateTime.parse(e.createdAt),
-        displayDate: e.date,
-        icon: _getCategoryIconData(e.category),
-        color: _getCategoryColor(e.category),
-        source: e.paymentMethod,
-      ));
+      merged.add(
+        _AllMergedTransaction(
+          title: e.category,
+          subtitle: e.note,
+          amount: e.amount,
+          isCredit: false,
+          dateTime: DateTime.parse(e.createdAt),
+          displayDate: e.date,
+          icon: _getCategoryIconData(e.category),
+          color: _getCategoryColor(e.category),
+          source: e.paymentMethod,
+        ),
+      );
     }
 
     for (var t in walletTxs) {
-      bool isExpenseLinked = t.source.startsWith('Expense:') || t.source.startsWith('Lent to');
+      bool isExpenseLinked =
+          t.source.startsWith('Expense:') || t.source.startsWith('Lent to');
       if (t.type == 'credit' || (t.type == 'debit' && !isExpenseLinked)) {
         DateTime dt = DateTime.parse(t.createdAt);
-        merged.add(_AllMergedTransaction(
-          title: t.source,
+        merged.add(
+          _AllMergedTransaction(
+            title: t.source,
+            subtitle: t.note,
+            amount: t.amount,
+            isCredit: t.type == 'credit',
+            dateTime: dt,
+            displayDate: DateFormat('d/M/yyyy').format(dt),
+            icon: t.type == 'credit'
+                ? Icons.add_circle_outline
+                : Icons.remove_circle_outline,
+            color: t.type == 'credit' ? Colors.green : Colors.blueGrey,
+            source: 'Wallet',
+          ),
+        );
+      }
+    }
+
+    for (var t in savingTxs) {
+      if (t.source == 'Wallet') continue;
+
+      DateTime dt = DateTime.parse(t.createdAt);
+      merged.add(
+        _AllMergedTransaction(
+          title: 'Saving (${t.source})',
           subtitle: t.note,
           amount: t.amount,
           isCredit: t.type == 'credit',
           dateTime: dt,
           displayDate: DateFormat('d/M/yyyy').format(dt),
-          icon: t.type == 'credit' ? Icons.add_circle_outline : Icons.remove_circle_outline,
-          color: t.type == 'credit' ? Colors.green : Colors.blueGrey,
-          source: 'Wallet',
-        ));
-      }
+          icon: t.type == 'credit'
+              ? Icons.savings_outlined
+              : Icons.money_off_outlined,
+          color: t.type == 'credit' ? Colors.teal : Colors.deepOrange,
+          source: 'Savings',
+        ),
+      );
     }
 
     merged.sort((a, b) => b.dateTime.compareTo(a.dateTime));
@@ -176,29 +216,47 @@ class AllTransactionsScreen extends StatelessWidget {
 
   IconData _getCategoryIconData(String category) {
     switch (category) {
-      case 'Food': return Icons.restaurant;
-      case 'Transport': return Icons.directions_bus;
-      case 'Rent': return Icons.home;
-      case 'Shopping': return Icons.shopping_bag;
-      case 'Entertainment': return Icons.movie;
-      case 'Bills': return Icons.receipt;
-      case 'Medical': return Icons.medical_services;
-      case 'Friend': return Icons.person;
-      default: return Icons.category;
+      case 'Food':
+        return Icons.restaurant;
+      case 'Transport':
+        return Icons.directions_bus;
+      case 'Rent':
+        return Icons.home;
+      case 'Shopping':
+        return Icons.shopping_bag;
+      case 'Entertainment':
+        return Icons.movie;
+      case 'Bills':
+        return Icons.receipt;
+      case 'Medical':
+        return Icons.medical_services;
+      case 'Friend':
+        return Icons.person;
+      default:
+        return Icons.category;
     }
   }
 
   Color _getCategoryColor(String category) {
     switch (category) {
-      case 'Food': return Colors.orange;
-      case 'Transport': return Colors.blue;
-      case 'Rent': return Colors.purple;
-      case 'Shopping': return Colors.pink;
-      case 'Entertainment': return Colors.red;
-      case 'Bills': return Colors.cyan;
-      case 'Medical': return Colors.green;
-      case 'Friend': return Colors.indigo;
-      default: return Colors.grey;
+      case 'Food':
+        return Colors.orange;
+      case 'Transport':
+        return Colors.blue;
+      case 'Rent':
+        return Colors.purple;
+      case 'Shopping':
+        return Colors.pink;
+      case 'Entertainment':
+        return Colors.red;
+      case 'Bills':
+        return Colors.cyan;
+      case 'Medical':
+        return Colors.green;
+      case 'Friend':
+        return Colors.indigo;
+      default:
+        return Colors.grey;
     }
   }
 }
