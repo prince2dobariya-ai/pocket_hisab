@@ -55,6 +55,41 @@ class SettingScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // ── Wallet section ─────────────────────────────────────────────
+          _SectionHeader(title: 'Wallet'),
+          Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: ListTile(
+              title: const Text('Wallet Max Limit'),
+              subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Range : '),
+                  TextButton(onPressed: () {}, child: const Text('0')),
+                  const Text('   to   '),
+                  Obx(
+                    () => TextButton(
+                      onPressed: () {
+                        _showEditDialog(
+                          context,
+                          'Edit Max Wallet Limit',
+                          settingsCtrl.maxWalletLimit.value,
+                          (val) => settingsCtrl.setMaxWalletLimit(val),
+                        );
+                      },
+                      child: Text(
+                        settingsCtrl.maxWalletLimit.value.toStringAsFixed(0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Card(
             margin: const EdgeInsets.only(bottom: 8),
             shape: RoundedRectangleBorder(

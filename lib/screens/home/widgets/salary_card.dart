@@ -111,10 +111,14 @@ class SalaryCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white.withAlpha(50),
                 borderRadius: .circular(12),
-                border: .all(color: Colors.blueGrey.shade50,width: 0.6),
+                border: .all(color: Colors.blueGrey.shade50, width: 0.6),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05),blurRadius: 8,offset: Offset(0, 2))
-                ]
+                  BoxShadow(
+                    color: Colors.black.withAlpha(4),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: .start,
@@ -186,8 +190,16 @@ class SalaryCard extends StatelessWidget {
                     margin: .only(top: 16.0),
                     padding: .all(12.0),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white.withAlpha(50),
+                      borderRadius: .circular(12),
+                      border: .all(color: Colors.blueGrey.shade50, width: 0.6),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(4),
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: .start,
@@ -218,8 +230,19 @@ class SalaryCard extends StatelessWidget {
                       margin: .only(top: 16.0),
                       padding: .all(12.0),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.4),
-                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white.withAlpha(50),
+                        borderRadius: .circular(12),
+                        border: .all(
+                          color: Colors.blueGrey.shade50,
+                          width: 0.6,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha(4),
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: .start,

@@ -6,6 +6,7 @@ import 'package:pocket_hisab/controllers/person_controller.dart';
 import 'package:pocket_hisab/helpers/currency_helper.dart';
 import 'package:pocket_hisab/models/person_model.dart';
 import 'package:pocket_hisab/screens/hisab/person_hisab_history_screen.dart';
+import 'package:pocket_hisab/widgets/custom_button.dart';
 import 'package:pocket_hisab/widgets/custom_text.dart';
 import 'package:pocket_hisab/widgets/custome_textform_filed.dart';
 
@@ -22,10 +23,10 @@ class PersonScreen extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12),
+              margin: const .symmetric(horizontal: 12),
               decoration: BoxDecoration(
                 color: AppColors.primary.withAlpha(30),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
               ),
               child: ListTile(
                 title: const Text('Net Balance'),
@@ -50,8 +51,8 @@ class PersonScreen extends StatelessWidget {
                       ? Colors.green
                       : Colors.red;
                   return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: .min,
+                    crossAxisAlignment: .end,
                     children: [
                       AppText(netBalance, color: netBalanceColor),
                       AppText(balanceText, color: netBalanceColor),
@@ -68,7 +69,7 @@ class PersonScreen extends StatelessWidget {
                     child: Text(
                       "No person found",
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: .w600,
                         color: Colors.black54,
                         fontSize: 16,
                       ),
@@ -85,7 +86,7 @@ class PersonScreen extends StatelessWidget {
                     color: Colors.grey,
                     thickness: 0.5,
                   ),
-                  padding: const EdgeInsets.only(bottom: 70),
+                  padding: const .only(bottom: 70),
                   itemCount: itemCount,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
@@ -128,11 +129,14 @@ class PersonScreen extends StatelessWidget {
                               crossAxisAlignment: .end,
                               children: [
                                 AppText(
-                                  CurrencyHelper.format((person.balance ?? 0).abs()),
+                                  CurrencyHelper.format(
+                                    (person.balance ?? 0).abs(),
+                                  ),
                                   color: (person.balance ?? 0) > 0
                                       ? Colors.green
                                       : Colors.red,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.bold,
+                                ),
                                 AppText(
                                   (person.balance ?? 0) > 0
                                       ? 'You get'
@@ -141,9 +145,11 @@ class PersonScreen extends StatelessWidget {
                                       ? Colors.green
                                       : Colors.red,
                                 ),
-                              ]),
+                              ],
+                            ),
                     );
-                  }),
+                  },
+                ),
               );
             }),
           ],
@@ -160,7 +166,7 @@ class PersonScreen extends StatelessWidget {
             ),
           );
         },
-        label: AppText('+Add Person'),
+        label: AppText('+ Add Person', color: Colors.white),
       ),
     );
   }
@@ -212,17 +218,10 @@ class _AddPersonBottomSheetState extends State<_AddPersonBottomSheet> {
           ),
           const SizedBox(height: 24),
           SizedBox(
-            width: double.infinity,
+            width: .infinity,
             height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade400,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () {
+            child: CustomButton(
+              onTap: () {
                 final personName = _personName.text.trim();
                 if (personName.isEmpty) {
                   Get.snackbar('Error', 'Please enter Person name');
@@ -236,10 +235,9 @@ class _AddPersonBottomSheetState extends State<_AddPersonBottomSheet> {
                     createdAt: DateTime.now().toString(),
                   ),
                 );
-
                 Get.back();
               },
-              child: const AppText("Add person"),
+              title: "Add Person",
             ),
           ),
         ],

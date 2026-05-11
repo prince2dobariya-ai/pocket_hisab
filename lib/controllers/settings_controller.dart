@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsController extends GetxController {
   final RxDouble maxSavingLimit = 10000.0.obs;
+  final RxDouble maxWalletLimit = 5000.0.obs;
   final RxInt cycleStartDay = 1.obs; // Default to 1st of month
 
   @override
@@ -14,6 +15,7 @@ class SettingsController extends GetxController {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     maxSavingLimit.value = prefs.getDouble('maxSavingLimit') ?? 10000.0;
+    maxWalletLimit.value = prefs.getDouble('maxWalletLimit') ?? 5000.0;
     cycleStartDay.value = prefs.getInt('cycleStartDay') ?? 1;
   }
 
@@ -27,5 +29,11 @@ class SettingsController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('maxSavingLimit', limit);
     maxSavingLimit.value = limit;
+  }
+
+  Future<void> setMaxWalletLimit(double limit) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('maxWalletLimit', limit);
+    maxWalletLimit.value = limit;
   }
 }
