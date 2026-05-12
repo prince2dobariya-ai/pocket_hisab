@@ -46,15 +46,16 @@ class SalaryCard extends StatelessWidget {
       return Container(
         padding: .all(16.0),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.secondary.withValues(alpha: 0.8),
-              AppColors.primary.withValues(alpha: 0.8),
-            ],
-            begin: Alignment.bottomLeft,
-            end: Alignment.topRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.primary.withAlpha(222),
+          borderRadius: .circular(12),
+          border: .all(color: Colors.blueGrey.shade50, width: 0.6),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(4),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           children: [
@@ -65,7 +66,7 @@ class SalaryCard extends StatelessWidget {
                   crossAxisAlignment: .start,
                   children: [
                     Text(
-                      "$month Salary",
+                      "$month Income",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

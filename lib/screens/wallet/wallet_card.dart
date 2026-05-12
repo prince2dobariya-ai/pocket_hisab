@@ -39,15 +39,16 @@ class WalletCard extends StatelessWidget {
       return Container(
         padding: .all(16.0),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.primary.withValues(alpha: 0.8),
-              AppColors.secondary.withValues(alpha: 0.8),
-            ],
-            begin: Alignment.bottomLeft,
-            end: Alignment.topRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.primary.withAlpha(222),
+          borderRadius: .circular(12),
+          border: .all(color: Colors.blueGrey.shade50, width: 0.6),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(4),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           children: [
@@ -332,7 +333,7 @@ class _AddWalletBottomSheetState extends State<_AddWalletBottomSheet> {
                     amountPaid: 0.0,
                     remainingAmount: amount,
                     status: 'pending',
-                    note: "Borrowed from friend",
+                    note: "Received from friend",
                     createdAt: DateTime.now().toIso8601String(),
                   ),
                 );

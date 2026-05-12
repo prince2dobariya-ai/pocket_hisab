@@ -224,7 +224,7 @@ class SavingController extends GetxController {
           amountPaid: 0.0,
           remainingAmount: amount,
           status: 'pending',
-          note: "Borrowed from friend for savings",
+          note: "Received from friend for savings",
           createdAt: DateTime.now().toIso8601String(),
         ),
       );
