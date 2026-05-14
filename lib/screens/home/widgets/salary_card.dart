@@ -100,7 +100,7 @@ class SalaryCard extends StatelessWidget {
                     );
                   },
                   icon: Icon(Icons.add, color: AppColors.primary, size: 24),
-                  label: Text("Add to Salary"),
+                  label: Text("Add to Income"),
                 ),
               ],
             ),
@@ -325,7 +325,7 @@ class _AddSalaryBottomSheetState extends State<_AddSalaryBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Add Salary",
+                "Add Income",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               IconButton(
@@ -336,7 +336,7 @@ class _AddSalaryBottomSheetState extends State<_AddSalaryBottomSheet> {
           ),
           const SizedBox(height: 16),
           const Text(
-            "Salary Amount",
+            "Income Amount",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
