@@ -25,21 +25,32 @@ class PersonScreen extends StatelessWidget {
             Container(
               margin: const .symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: AppColors.primary.withAlpha(30),
-                borderRadius: .circular(16),
+                color: AppColors.primary.withAlpha(222),
+                borderRadius: .circular(12),
+                border: .all(color: Colors.blueGrey.shade50, width: 0.6),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(4),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: ListTile(
-                title: const Text('Net Balance'),
+                title: const AppText('Net Balance', color: Colors.white),
                 subtitle: Row(
                   spacing: 4,
                   children: [
                     const Icon(
                       Icons.person_outline,
                       size: 12,
-                      color: Colors.grey,
+                      color: Colors.white,
                     ),
                     Obx(
-                      () => Text('${personController.persons.length} Persons'),
+                      () => AppText(
+                        '${personController.persons.length} Persons',
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
@@ -62,7 +73,7 @@ class PersonScreen extends StatelessWidget {
               ),
             ),
             Obx(() {
-              int itemCount = personController.persons.length; // +1 for the ad
+              int itemCount = personController.persons.length;
               if (personController.persons.isEmpty) {
                 return const Expanded(
                   child: Center(
@@ -90,37 +101,25 @@ class PersonScreen extends StatelessWidget {
                   itemCount: itemCount,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    // if (index == 2) {
-                    //   // insert ad at position 3
-                    //   if (AdService.isNativeAdLoaded) {
-                    //     return Container(
-                    //         height: 80,
-                    //         padding: const EdgeInsets.symmetric(horizontal: 10),
-                    //         child: AdWidget(ad: AdService.nativeAd!));
-                    //   } else {
-                    //     return const SizedBox(); // Or a loading placeholder
-                    //   }
-                    // }
-                    // int dataIndex = (index > 2) ? index - 1 : index;
-
                     PersonModel person = personController.persons[index];
-                    // Color balanceColor = (person.balance ?? 0) >= 0
-                    //     ? Colors.green
-                    //     : Colors.red;
                     return ListTile(
                       onTap: () => Get.to(
                         () => PersonHisabHistoryScreen(
+                          personId: person.id?.toString() ?? '',
                           personName: person.personName,
                         ),
                       ),
-                      title: Text(person.personName),
+                      title: AppText(person.personName),
                       leading: CircleAvatar(
-                        child: Text(
+                        child: AppText(
                           person.personName.substring(0, 1).toUpperCase(),
+                          color: Colors.white,
                         ),
                       ),
                       subtitle: AppText(
                         "Added on ${DateFormat('dd MMM, yyyy').format(DateTime.parse(person.createdAt))}",
+                        size: 12,
+                        color: AppColors.textLight,
                       ),
                       trailing: person.balance == 0
                           ? const SizedBox()
@@ -135,7 +134,8 @@ class PersonScreen extends StatelessWidget {
                                   color: (person.balance ?? 0) > 0
                                       ? Colors.green
                                       : Colors.red,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: .bold,
+                                  size: 14,
                                 ),
                                 AppText(
                                   (person.balance ?? 0) > 0
@@ -144,6 +144,7 @@ class PersonScreen extends StatelessWidget {
                                   color: (person.balance ?? 0) > 0
                                       ? Colors.green
                                       : Colors.red,
+                                  size: 14,
                                 ),
                               ],
                             ),
@@ -162,7 +163,7 @@ class PersonScreen extends StatelessWidget {
             isScrollControlled: false,
             backgroundColor: AppColors.bottomSheet,
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: .vertical(top: .circular(20)),
             ),
           );
         },

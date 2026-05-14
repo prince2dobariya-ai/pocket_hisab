@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pocket_hisab/controllers/hisab_controller.dart';
+import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/models/hisab_model.dart';
-import 'package:pocket_hisab/screens/hisab/add_hisab_screen.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
+import 'package:pocket_hisab/widgets/custom_button.dart';
+import 'package:pocket_hisab/widgets/custome_textform_filed.dart';
 
 class PersonHisabHistoryScreen extends StatelessWidget {
+  final String personId;
   final String personName;
 
-  const PersonHisabHistoryScreen({super.key, required this.personName});
+  const PersonHisabHistoryScreen({super.key, required this.personId, required this.personName});
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +26,7 @@ class PersonHisabHistoryScreen extends StatelessWidget {
             child: Obx(() {
               final items = hisabCtrl.hisabs
                   .where(
-                    (h) =>
-                        h.personName?.trim().toLowerCase() ==
-                        personName.trim().toLowerCase(),
+                    (h) => h.personId == personId,
                   )
                   .toList();
 
@@ -51,10 +52,7 @@ class PersonHisabHistoryScreen extends StatelessWidget {
 
               return ListView.builder(
                 reverse: true,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+                padding: const .symmetric(horizontal: 16, vertical: 8),
                 itemCount: sortedDates.length,
                 itemBuilder: (context, index) {
                   String dateStr = sortedDates[index];
@@ -175,7 +173,7 @@ class PersonHisabHistoryScreen extends StatelessWidget {
   Widget _buildBottomSummary(HisabController hisabCtrl) {
     return Obx(() {
       final items = hisabCtrl.hisabs
-          .where((h) => h.personName == personName)
+          .where((h) => h.personId == personId)
           .toList();
 
       double netBalance = 0;
@@ -216,12 +214,20 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                     "Received",
                     Colors.green,
                     Icons.arrow_circle_down,
-                    onTap: () => Get.to(
-                      () => AddHisabScreen(
-                        personName: personName,
-                        isBorrowed: true,
-                      ),
-                    ),
+                    onTap: () {
+                      Get.bottomSheet(
+                        _AddPersonHisabBottomSheet(
+                          personName: personName,
+                          isBorrowed: true,
+                        ),
+                        backgroundColor: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: .vertical(
+                            top: .circular(24),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -230,12 +236,20 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                     "Given",
                     Colors.red,
                     Icons.arrow_circle_up,
-                    onTap: () => Get.to(
-                      () => AddHisabScreen(
-                        personName: personName,
-                        isBorrowed: false,
-                      ),
-                    ),
+                    onTap: () {
+                      Get.bottomSheet(
+                        _AddPersonHisabBottomSheet(
+                          personName: personName,
+                          isBorrowed: false,
+                        ),
+                        backgroundColor: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: .vertical(
+                            top: .circular(24),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -277,6 +291,230 @@ class PersonHisabHistoryScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AddPersonHisabBottomSheet extends StatefulWidget {
+  final String? personName;
+  final bool? isBorrowed;
+
+  const _AddPersonHisabBottomSheet({
+    super.key,
+    this.personName,
+    this.isBorrowed,
+  });
+  @override
+  State<_AddPersonHisabBottomSheet> createState() =>
+      _AddPersonHisabBottomSheetState();
+}
+
+class _AddPersonHisabBottomSheetState
+    extends State<_AddPersonHisabBottomSheet> {
+  late final TextEditingController _amountController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _noteController;
+  late final TextEditingController _dateController;
+
+  late bool _isBorrowed;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController = TextEditingController();
+    _nameController = TextEditingController(text: widget.personName);
+    _noteController = TextEditingController();
+    _dateController = TextEditingController(
+      text:
+          "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+    );
+    _isBorrowed = widget.isBorrowed ?? true;
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _nameController.dispose();
+    _noteController.dispose();
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        _dateController.text = "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16.0,
+        right: 16.0,
+        top: 24.0,
+        bottom: MediaQuery.of(context).padding.bottom + 16.0,
+      ),
+      child: Column(
+        mainAxisSize: .min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Toggle for Borrowed vs Lent
+          if(false)Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: .circular(16),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _isBorrowed = true),
+                    child: Container(
+                      padding: const .symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: _isBorrowed
+                            ? Colors.green.shade400
+                            : Colors.transparent,
+                        borderRadius: .circular(16),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Received (Borrowed)",
+                          style: TextStyle(
+                            color: _isBorrowed ? Colors.white : Colors.black54,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _isBorrowed = false),
+                    child: Container(
+                      padding: const .symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: !_isBorrowed
+                            ? Colors.red.shade400
+                            : Colors.transparent,
+                        borderRadius: .circular(16),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Given (Lent)",
+                          style: TextStyle(
+                            color: !_isBorrowed ? Colors.white : Colors.black54,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          CustomTextField(
+            controller: _amountController,
+            labelText: "Amount",
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 24),
+
+
+          const Text(
+            "Note (Optional)",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          CustomTextField(
+            controller: _noteController,
+            labelText: 'What was this for?',
+            maxLine: 3,
+          ),
+          const SizedBox(height: 24),
+          CustomButton(
+            title: _isBorrowed ? "Received" : "Given",
+            color: _isBorrowed ? Colors.green.shade400 : Colors.red.shade400,
+            onTap: () async {
+              final amountText = _amountController.text.trim();
+              final nameText = _nameController.text.trim();
+
+              if (amountText.isEmpty || nameText.isEmpty) {
+                Get.snackbar("Error", "Please enter amount and friend's name");
+                return;
+              }
+
+              final amount = double.tryParse(amountText);
+              if (amount == null || amount <= 0) {
+                Get.snackbar("Error", "Invalid amount entered");
+                return;
+              }
+
+              final hisabCtrl = Get.find<HisabController>();
+              final walletCtrl = Get.find<WalletController>();
+
+              // Get or create person to get personId
+              final personId = await hisabCtrl.getOrCreatePerson(nameText);
+
+              // Add Hisab
+              final type = _isBorrowed ? 'borrowed' : 'given';
+              await hisabCtrl.addHisab(
+                HisabModel(
+                  personId: personId,
+                  personName: nameText,
+                  type: type,
+                  amount: amount,
+                  note: _noteController.text.trim(),
+                  createdAt: DateTime.now().toIso8601String(),
+                  status: 'pending',
+                  amountPaid: 0,
+                  remainingAmount: amount,
+                ),
+              );
+
+              // Affect Wallet
+              if (walletCtrl.wallets.isNotEmpty) {
+                final walletId = walletCtrl.wallets.first.id!;
+                if (_isBorrowed) {
+                  await walletCtrl.credit(
+                    walletId: walletId,
+                    amount: amount,
+                    source: 'Hisab: $nameText',
+                    note: 'Received from $nameText',
+                  );
+                } else {
+                  await walletCtrl.debit(
+                    walletId: walletId,
+                    amount: amount,
+                    source: 'Hisab: $nameText',
+                    note: 'Given to $nameText',
+                  );
+                }
+              } else {
+                Get.snackbar(
+                  "Info",
+                  "Hisab recorded, but no wallet found to update balance.",
+                );
+              }
+
+              Get.back();
+            },
+          ),
+        ],
       ),
     );
   }
