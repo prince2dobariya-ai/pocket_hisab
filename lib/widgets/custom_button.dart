@@ -4,9 +4,15 @@ import 'package:pocket_hisab/widgets/custom_text.dart';
 
 class CustomButton extends StatelessWidget {
   final String title;
+  final Color color;
   final VoidCallback onTap;
 
-  const CustomButton({super.key, required this.title, required this.onTap});
+  const CustomButton({
+    super.key,
+    required this.title,
+    required this.onTap,
+    this.color = AppColors.primary,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +21,7 @@ class CustomButton extends StatelessWidget {
       child: Container(
         width: .infinity,
         padding: .symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          borderRadius: .circular(12),
-          color: AppColors.primary,
-        ),
+        decoration: BoxDecoration(borderRadius: .circular(12), color: color),
         child: Center(child: AppText(title, color: Colors.white)),
       ),
     );

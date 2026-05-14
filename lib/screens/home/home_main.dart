@@ -51,7 +51,9 @@ class _HomeMainState extends State<HomeMain>
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (_tabController.index != 0) {
-          _tabController.animateTo(0);
+          setState(() {
+            _tabController.animateTo(0);
+          });
           return;
         }
 
@@ -81,7 +83,7 @@ class _HomeMainState extends State<HomeMain>
               onPressed: () {
                 Get.to(() => SettingScreen());
               },
-              icon: Icon(Icons.settings),
+              icon: Icon(Icons.settings_outlined),
             ),
           ],
         ),
