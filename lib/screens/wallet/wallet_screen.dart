@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:pocket_hisab/constants/app_theme.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/helpers/currency_helper.dart';
-import 'package:pocket_hisab/screens/expense/add_expense_screen.dart';
 import 'package:pocket_hisab/screens/wallet/wallet_card.dart';
 import 'package:pocket_hisab/widgets/custom_text.dart';
 
@@ -84,7 +83,7 @@ class WalletScreen extends StatelessWidget {
                           child: Container(
                             width: .infinity,
                             padding: .symmetric(horizontal: 12, vertical: 6),
-                            color: AppColors.border,
+                            color: AppColors.border.withValues(alpha: 0.5),
                             child: HeadingText(getDateTitle(date)),
                           ),
                         ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pocket_hisab/constants/app_theme.dart';
 import 'package:pocket_hisab/controllers/hisab_controller.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
+import 'package:pocket_hisab/helpers/currency_helper.dart';
 import 'package:pocket_hisab/models/hisab_model.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
 import 'package:pocket_hisab/widgets/custom_button.dart';
@@ -21,58 +23,57 @@ class PersonHisabHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hisabCtrl = Get.find<HisabController>();
-
     return Scaffold(
       appBar: CustomAppBar(title: personName.toUpperCase()),
-      body: Column(
-        children: [
-          Expanded(
-            child: Obx(() {
-              final items = hisabCtrl.hisabs
-                  .where((h) => h.personId.toString() == personId)
-                  .toList();
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Obx(() {
+                final items = hisabCtrl.hisabs
+                    .where((h) => h.personId.toString() == personId)
+                    .toList();
 
-              if (items.isEmpty) {
-                return const Center(child: Text("No history found"));
-              }
-
-              // Sort items by date (Oldest first for chat-like flow)
-              items.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-
-              // Group items by date
-              Map<String, List<HisabModel>> groupedItems = {};
-              for (var item in items) {
-                String date = item.createdAt.split('T').first;
-                if (!groupedItems.containsKey(date)) {
-                  groupedItems[date] = [];
+                if (items.isEmpty) {
+                  return const Center(child: Text("No history found"));
                 }
-                groupedItems[date]!.add(item);
-              }
 
-              final sortedDates = groupedItems.keys.toList()
-                ..sort((a, b) => a.compareTo(b));
+                // Sort items by date (Oldest first for chat-like flow)
+                items.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-              return ListView.builder(
-                reverse: true,
-                padding: const .symmetric(horizontal: 16, vertical: 8),
-                itemCount: sortedDates.length,
-                itemBuilder: (context, index) {
-                  String dateStr = sortedDates[index];
-                  List<HisabModel> dayItems = groupedItems[dateStr]!;
-                  return Column(
-                    children: [
-                      _buildDateDivider(dateStr),
-                      ...dayItems
-                          .map((item) => _buildChatBubble(item))
-                          .toList(),
-                    ],
-                  );
-                },
-              );
-            }),
-          ),
-          _buildBottomSummary(hisabCtrl),
-        ],
+                // Group items by date
+                Map<String, List<HisabModel>> groupedItems = {};
+                for (var item in items) {
+                  String date = item.createdAt.split('T').first;
+                  if (!groupedItems.containsKey(date)) {
+                    groupedItems[date] = [];
+                  }
+                  groupedItems[date]!.add(item);
+                }
+
+                final sortedDates = groupedItems.keys.toList()
+                  ..sort((a, b) => a.compareTo(b));
+
+                return ListView.builder(
+                  reverse: true,
+                  padding: const .symmetric(horizontal: 16, vertical: 8),
+                  itemCount: sortedDates.length,
+                  itemBuilder: (context, index) {
+                    String dateStr = sortedDates[index];
+                    List<HisabModel> dayItems = groupedItems[dateStr]!;
+                    return Column(
+                      children: [
+                        _buildDateDivider(dateStr),
+                        ...dayItems.map((item) => _buildChatBubble(item)),
+                      ],
+                    );
+                  },
+                );
+              }),
+            ),
+            _buildBottomSummary(hisabCtrl),
+          ],
+        ),
       ),
     );
   }
@@ -91,7 +92,7 @@ class PersonHisabHistoryScreen extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 16),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFE0E0E0),
+        color: AppColors.border,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -185,30 +186,32 @@ class PersonHisabHistoryScreen extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         decoration: BoxDecoration(
-          color: const Color(0xFFF1F5F5),
+          color: AppColors.card,
           border: Border(top: BorderSide(color: Colors.grey.shade300)),
         ),
         child: Column(
+          mainAxisSize: .min,
+          spacing: 16,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Balance Due",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  "Amount",
+                  style: TextStyle(fontSize: 16, fontWeight: .w500),
                 ),
                 Text(
-                  "₹${netBalance.abs().toStringAsFixed(2)}",
+                  CurrencyHelper.format(netBalance.abs()),
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontWeight: .bold,
                     color: netBalance > 0 ? Colors.red : Colors.green,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
             Row(
+              spacing: 16,
               children: [
                 Expanded(
                   child: _buildTransactionButton(
@@ -229,7 +232,6 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                     },
                   ),
                 ),
-                const SizedBox(width: 16),
                 Expanded(
                   child: _buildTransactionButton(
                     "Given",
@@ -358,7 +360,7 @@ class _AddPersonHisabBottomSheetState
       padding: EdgeInsets.only(
         left: 16.0,
         right: 16.0,
-        top: 24.0,
+        top: 12.0,
         bottom: MediaQuery.of(context).padding.bottom + 16.0,
       ),
       child: Column(

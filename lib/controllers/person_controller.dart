@@ -29,12 +29,12 @@ class PersonController extends GetxController {
       ORDER BY p.id DESC
     ''');
     
-    persons.value = rows.map((row) {
+    persons.assignAll(rows.map((row) {
       final model = PersonModel.fromMap(row);
       // We can extend PersonModel to include balance or just handle it here if needed
       // For now, let's just use the basic model and maybe update the UI to show balance
       return model;
-    }).toList();
+    }).toList());
 
     // Calculate total net balance
     double total = 0;

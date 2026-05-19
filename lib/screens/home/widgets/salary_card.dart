@@ -144,7 +144,7 @@ class SalaryCard extends StatelessWidget {
                     borderRadius: .circular(12),
                   ),
                   Text(
-                    '$displayPercent% salary remaining',
+                    '$displayPercent% remaining',
                     style: TextStyle(fontSize: 14, color: Colors.white),
                   ),
                   const SizedBox(height: 8),
