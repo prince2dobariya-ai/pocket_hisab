@@ -96,7 +96,7 @@ class _AnimatedLogoState extends State<_AnimatedLogo>
       _controller.forward(from: 0.0);
     }
 
-    if (_tapCount == 5) {
+    if (_tapCount == 3) {
       Get.snackbar(
         "Oops! 💸",
         "Did you just drop a coin from your wallet?",
@@ -104,7 +104,7 @@ class _AnimatedLogoState extends State<_AnimatedLogo>
         backgroundColor: Colors.blue.shade100,
         colorText: Colors.blue.shade900,
       );
-    } else if (_tapCount == 10) {
+    } else if (_tapCount == 9) {
       Get.snackbar(
         "Hey! 🏦",
         "This is a wallet, not a toy!",
@@ -120,7 +120,7 @@ class _AnimatedLogoState extends State<_AnimatedLogo>
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,
       );
-    } else if (_tapCount == 20) {
+    } else if (_tapCount == 21) {
       Get.snackbar(
         "Okay, you win! 🏆",
         "You are the ultimate Pocket Hisab clicker!",

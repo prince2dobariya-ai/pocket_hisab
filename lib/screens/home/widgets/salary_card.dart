@@ -126,7 +126,7 @@ class SalaryCard extends StatelessWidget {
                 spacing: 4,
                 children: [
                   Text(
-                    "Salary Left",
+                    "Balance Left",
                     style: TextStyle(fontSize: 14, color: Colors.white),
                   ),
                   Text(

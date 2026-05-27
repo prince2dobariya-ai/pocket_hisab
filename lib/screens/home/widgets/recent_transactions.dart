@@ -46,7 +46,7 @@ class RecentTransactions extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final mergedItems = _getMergedTransactions(
+          var mergedItems = _getMergedTransactions(
             txCtrl.expenses,
             walletCtrl.transactions,
             savingCtrl.transactions,
@@ -58,6 +58,9 @@ class RecentTransactions extends StatelessWidget {
 
           // Grouping by date
           Map<String, List<_MergedTransaction>> grouped = {};
+          if (mergedItems.length > 10) {
+            mergedItems = mergedItems.take(10).toList();
+          }
           for (var item in mergedItems) {
             if (!grouped.containsKey(item.displayDate)) {
               grouped[item.displayDate] = [];

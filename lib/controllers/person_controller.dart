@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:pocket_hisab/controllers/hisab_controller.dart';
 import 'package:pocket_hisab/models/person_model.dart';
 import 'package:pocket_hisab/services/database_service.dart';
 
@@ -50,6 +51,9 @@ class PersonController extends GetxController {
     try {
       final id = await _db.insert(_table, person.toMap());
       await fetchAll();
+      if (Get.isRegistered<HisabController>()) {
+        Get.find<HisabController>().fetchPersons();
+      }
       return true;
     } catch (_) {
       return false;

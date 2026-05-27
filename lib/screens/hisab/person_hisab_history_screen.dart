@@ -175,7 +175,7 @@ class PersonHisabHistoryScreen extends StatelessWidget {
   Widget _buildBottomSummary(HisabController hisabCtrl) {
     return Obx(() {
       final items = hisabCtrl.hisabs
-          .where((h) => h.personId == personId)
+          .where((h) => h.personId.toString() == personId)
           .toList();
 
       double netBalance = 0;
@@ -221,8 +221,9 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                     onTap: () {
                       Get.bottomSheet(
                         _AddPersonHisabBottomSheet(
-                          personName: personName,
+                          personId: personId,
                           isBorrowed: true,
+                          personName: personName,
                         ),
                         backgroundColor: Colors.white,
                         shape: const RoundedRectangleBorder(
@@ -240,8 +241,9 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                     onTap: () {
                       Get.bottomSheet(
                         _AddPersonHisabBottomSheet(
-                          personName: personName,
+                          personId: personId,
                           isBorrowed: false,
+                          personName: personName,
                         ),
                         backgroundColor: Colors.white,
                         shape: const RoundedRectangleBorder(
@@ -296,13 +298,14 @@ class PersonHisabHistoryScreen extends StatelessWidget {
 }
 
 class _AddPersonHisabBottomSheet extends StatefulWidget {
-  final String? personName;
+  final String? personId;
   final bool? isBorrowed;
+  final String? personName;
 
   const _AddPersonHisabBottomSheet({
-    super.key,
-    this.personName,
+    this.personId,
     this.isBorrowed,
+    this.personName,
   });
   @override
   State<_AddPersonHisabBottomSheet> createState() =>
@@ -312,7 +315,6 @@ class _AddPersonHisabBottomSheet extends StatefulWidget {
 class _AddPersonHisabBottomSheetState
     extends State<_AddPersonHisabBottomSheet> {
   late final TextEditingController _amountController;
-  late final TextEditingController _nameController;
   late final TextEditingController _noteController;
   late final TextEditingController _dateController;
 
@@ -322,7 +324,6 @@ class _AddPersonHisabBottomSheetState
   void initState() {
     super.initState();
     _amountController = TextEditingController();
-    _nameController = TextEditingController(text: widget.personName);
     _noteController = TextEditingController();
     _dateController = TextEditingController(
       text:
@@ -334,7 +335,6 @@ class _AddPersonHisabBottomSheetState
   @override
   void dispose() {
     _amountController.dispose();
-    _nameController.dispose();
     _noteController.dispose();
     _dateController.dispose();
     super.dispose();
@@ -454,10 +454,9 @@ class _AddPersonHisabBottomSheetState
             color: _isBorrowed ? Colors.green.shade400 : Colors.red.shade400,
             onTap: () async {
               final amountText = _amountController.text.trim();
-              final nameText = _nameController.text.trim();
 
-              if (amountText.isEmpty || nameText.isEmpty) {
-                Get.snackbar("Error", "Please enter amount and friend's name");
+              if (amountText.isEmpty) {
+                Get.snackbar("Error", "Please enter amount");
                 return;
               }
 
@@ -471,14 +470,14 @@ class _AddPersonHisabBottomSheetState
               final walletCtrl = Get.find<WalletController>();
 
               // Get or create person to get personId
-              final personId = await hisabCtrl.getOrCreatePerson(nameText);
+              // final personId = await hisabCtrl.getOrCreatePerson(widget.personId);
 
               // Add Hisab
               final type = _isBorrowed ? 'borrowed' : 'given';
               await hisabCtrl.addHisab(
                 HisabModel(
-                  personId: personId,
-                  personName: nameText,
+                  personId: int.parse(widget.personId.toString()),
+                  personName: widget.personId,
                   type: type,
                   amount: amount,
                   note: _noteController.text.trim(),
@@ -496,15 +495,15 @@ class _AddPersonHisabBottomSheetState
                   await walletCtrl.credit(
                     walletId: walletId,
                     amount: amount,
-                    source: 'Hisab: $nameText',
-                    note: 'Received from $nameText',
+                    source: 'Hisab: ${widget.personName}',
+                    note: 'Received from ${widget.personName}',
                   );
                 } else {
                   await walletCtrl.debit(
                     walletId: walletId,
                     amount: amount,
-                    source: 'Hisab: $nameText',
-                    note: 'Given to $nameText',
+                    source: 'Hisab: ${widget.personName}',
+                    note: 'Given to ${widget.personName}',
                   );
                 }
               } else {

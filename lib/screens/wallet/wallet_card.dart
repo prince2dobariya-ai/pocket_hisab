@@ -38,6 +38,7 @@ class WalletCard extends StatelessWidget {
 
       return Container(
         padding: .all(16.0),
+        margin: .symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: AppColors.primary.withAlpha(222),
           borderRadius: .circular(12),

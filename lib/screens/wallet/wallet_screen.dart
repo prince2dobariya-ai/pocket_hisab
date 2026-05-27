@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:pocket_hisab/constants/app_theme.dart';
 import 'package:pocket_hisab/controllers/wallet_controller.dart';
 import 'package:pocket_hisab/helpers/currency_helper.dart';
+import 'package:pocket_hisab/models/transaction_model.dart';
 import 'package:pocket_hisab/screens/wallet/wallet_card.dart';
 import 'package:pocket_hisab/widgets/custom_text.dart';
 
@@ -16,129 +17,341 @@ class WalletScreen extends StatelessWidget {
     final walletCtrl = Get.find<WalletController>();
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const WalletCard(),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      backgroundColor: AppColors.background,
+      body: Column(
+        children: [
+          // ── Hero Balance Card ─────────────────────────────────────
+          const WalletCard(),
+
+          // ── Income / Expense Summary Row ──────────────────────────
+          Obx(() {
+            final credits = walletCtrl.transactions
+                .where((t) => t.type == 'credit')
+                .fold(0.0, (s, t) => s + t.amount);
+            final debits = walletCtrl.transactions
+                .where((t) => t.type == 'debit')
+                .fold(0.0, (s, t) => s + t.amount);
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _SummaryChip(
+                      label: 'Total Income',
+                      amount: credits,
+                      icon: Icons.arrow_circle_down_rounded,
+                      color: const Color(0xFF10B981),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _SummaryChip(
+                      label: 'Total Spent',
+                      amount: debits,
+                      icon: Icons.arrow_circle_up_rounded,
+                      color: const Color(0xFFEF4444),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+
+          // ── Transactions Header ───────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Row(
               children: [
-                const HeadingText("Recent Transactions"),
-                // AppText("See All"),
+                const AppText(
+                  'Transactions',
+                  fontWeight: FontWeight.bold,
+                  size: 17,
+                ),
+                const Spacer(),
+                Obx(
+                  () => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: AppText(
+                      '${walletCtrl.transactions.length} records',
+                      size: 11,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ],
             ),
-            Expanded(
-              child: Obx(() {
-                if (walletCtrl.transactions.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 60.0),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.receipt_long_outlined,
-                            size: 64,
-                            color: Colors.grey.shade300,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            "No transactions yet",
-                            style: TextStyle(
-                              color: Colors.grey.shade500,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
+          ),
 
-                final groupedTransactions = groupBy(walletCtrl.transactions, (
-                  tx,
-                ) {
-                  final date = DateTime.parse(tx.createdAt);
-                  return DateTime(date.year, date.month, date.day);
-                });
-                final sortedDates = groupedTransactions.keys.toList()
-                  ..sort((a, b) => b.compareTo(a));
-                return ListView.separated(
-                  shrinkWrap: true,
-                  padding: .only(bottom: 70),
-                  itemCount: sortedDates.length,
-                  separatorBuilder: (context, index) =>
-                      const Divider(height: 1, color: AppColors.border),
-                  itemBuilder: (context, index) {
-                    final date = sortedDates[index];
-                    final transactions = groupedTransactions[date]!;
-                    return Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        /// Date Header
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Container(
-                            width: .infinity,
-                            padding: .symmetric(horizontal: 12, vertical: 6),
-                            color: AppColors.border.withValues(alpha: 0.5),
-                            child: HeadingText(getDateTitle(date)),
-                          ),
-                        ),
+          // ── Transaction List ──────────────────────────────────────
+          Expanded(
+            child: Obx(() {
+              if (walletCtrl.transactions.isEmpty) {
+                return _buildEmptyState();
+              }
 
-                        /// Transactions
-                        ...transactions.map((tx) {
-                          final isCredit = tx.type == "credit";
-                          final txDate = DateTime.parse(tx.createdAt);
-                          return Column(
-                            children: [
-                              ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                leading: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: isCredit
-                                        ? Colors.green.withValues(alpha: 0.1)
-                                        : Colors.red.withValues(alpha: 0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    isCredit ? Icons.add : Icons.remove,
-                                    color: isCredit ? Colors.green : Colors.red,
-                                    size: 20,
-                                  ),
-                                ),
-                                title: AppText(tx.source),
-                                subtitle: Text(
-                                  DateFormat('hh:mm a').format(txDate),
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                trailing: Text(
-                                  "${isCredit ? '+' : '-'}${CurrencyHelper.format(tx.amount)}",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: isCredit ? Colors.green : Colors.red,
-                                  ),
-                                ),
-                              ),
+              final grouped = groupBy(walletCtrl.transactions, (tx) {
+                final date = DateTime.parse(tx.createdAt);
+                return DateTime(date.year, date.month, date.day);
+              });
+              final sortedDates = grouped.keys.toList()
+                ..sort((a, b) => b.compareTo(a));
 
-                              const Divider(height: 1, color: AppColors.border),
-                            ],
-                          );
-                        }),
-                      ],
-                    );
-                  },
-                );
-              }),
+              return ListView.builder(
+                padding: const EdgeInsets.only(bottom: 90, top: 4),
+                itemCount: sortedDates.length,
+                itemBuilder: (context, index) {
+                  final date = sortedDates[index];
+                  final txs = grouped[date]!;
+                  return _DateGroup(date: date, transactions: txs);
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
+            child: Icon(
+              Icons.receipt_long_rounded,
+              size: 56,
+              color: AppColors.primary.withValues(alpha: 0.5),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const AppText(
+            'No Transactions Yet',
+            fontWeight: FontWeight.bold,
+            size: 17,
+          ),
+          const SizedBox(height: 6),
+          AppText(
+            'Add money to your wallet to get started.',
+            size: 13,
+            color: AppColors.textLight,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Summary chip ──────────────────────────────────────────────────────────────
+
+class _SummaryChip extends StatelessWidget {
+  final String label;
+  final double amount;
+  final IconData icon;
+  final Color color;
+
+  const _SummaryChip({
+    required this.label,
+    required this.amount,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 18),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(label, size: 11, color: AppColors.textLight),
+                AppText(
+                  CurrencyHelper.format(amount),
+                  size: 14,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Date group ────────────────────────────────────────────────────────────────
+
+class _DateGroup extends StatelessWidget {
+  final DateTime date;
+  final List<TransactionModel> transactions;
+
+  const _DateGroup({required this.date, required this.transactions});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Date header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: AppText(
+                  getDateTitle(date),
+                  size: 12,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(child: Container(height: 1, color: AppColors.border)),
+            ],
+          ),
+        ),
+
+        // Transaction cards
+        ...transactions.map((tx) => _TransactionCard(tx: tx)),
+      ],
+    );
+  }
+}
+
+// ── Single transaction card ───────────────────────────────────────────────────
+
+class _TransactionCard extends StatelessWidget {
+  final TransactionModel tx;
+
+  const _TransactionCard({required this.tx});
+
+  @override
+  Widget build(BuildContext context) {
+    final isCredit = tx.type == 'credit';
+    final color = isCredit ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+    final bgColor = isCredit
+        ? const Color(0xFF10B981).withValues(alpha: 0.08)
+        : const Color(0xFFEF4444).withValues(alpha: 0.08);
+    final icon = isCredit
+        ? Icons.arrow_circle_down_rounded
+        : Icons.arrow_circle_up_rounded;
+    final txDate = DateTime.parse(tx.createdAt);
+    final timeStr = DateFormat('hh:mm a').format(txDate);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        leading: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
+          child: Icon(icon, color: color, size: 22),
+        ),
+        title: AppText(tx.source, size: 14, fontWeight: FontWeight.w600),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Row(
+            children: [
+              Icon(
+                Icons.access_time_rounded,
+                size: 11,
+                color: Colors.grey.shade400,
+              ),
+              const SizedBox(width: 3),
+              AppText(timeStr, size: 11, color: AppColors.textLight),
+              if (tx.note != null && tx.note!.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                const Text(
+                  '·',
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: AppText(
+                    tx.note!,
+                    size: 11,
+                    color: AppColors.textLight,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        trailing: Text(
+          '${isCredit ? '+' : '-'}${CurrencyHelper.format(tx.amount)}',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            color: color,
+            letterSpacing: -0.3,
+          ),
         ),
       ),
     );

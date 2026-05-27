@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:pocket_hisab/controllers/person_controller.dart';
 import 'package:pocket_hisab/models/hisab_model.dart';
 import 'package:pocket_hisab/models/person_model.dart';
 import 'package:pocket_hisab/services/database_service.dart';
@@ -54,6 +55,9 @@ class HisabController extends GetxController {
     );
     final id = await _db.insert(_tablePersons, newPerson.toMap());
     await fetchPersons();
+    if (Get.isRegistered<PersonController>()) {
+      Get.find<PersonController>().fetchAll();
+    }
     return id;
   }
 
@@ -62,6 +66,9 @@ class HisabController extends GetxController {
       final id = await _db.insert(_tableTransactions, hisab.toMap());
       // Re-fetch to get joined data (personName)
       await fetchTransactions();
+      if (Get.isRegistered<PersonController>()) {
+        Get.find<PersonController>().fetchAll();
+      }
       return true;
     } catch (_) {
       return false;
@@ -72,6 +79,9 @@ class HisabController extends GetxController {
     try {
       await _db.update(_tableTransactions, hisab.toMap(), hisab.id!);
       await fetchTransactions();
+      if (Get.isRegistered<PersonController>()) {
+        Get.find<PersonController>().fetchAll();
+      }
       return true;
     } catch (_) {
       return false;
@@ -82,6 +92,9 @@ class HisabController extends GetxController {
     try {
       await _db.delete(_tableTransactions, id);
       hisabs.removeWhere((h) => h.id == id);
+      if (Get.isRegistered<PersonController>()) {
+        Get.find<PersonController>().fetchAll();
+      }
       return true;
     } catch (_) {
       return false;
