@@ -52,7 +52,7 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                 }
 
                 final sortedDates = groupedItems.keys.toList()
-                  ..sort((a, b) => a.compareTo(b));
+                  ..sort((a, b) => b.compareTo(a));
 
                 return ListView.builder(
                   reverse: true,

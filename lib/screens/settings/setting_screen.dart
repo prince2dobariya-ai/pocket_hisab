@@ -6,6 +6,7 @@ import 'package:pocket_hisab/controllers/settings_controller.dart';
 import 'package:pocket_hisab/screens/emi/emi_screen.dart';
 import 'package:pocket_hisab/screens/settings/monthly_archive_screen.dart';
 import 'package:pocket_hisab/widgets/custom_appbar.dart';
+import 'package:pocket_hisab/widgets/custom_text.dart';
 import 'package:pocket_hisab/widgets/monthly_reset_dialog.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -29,7 +30,16 @@ class SettingScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
             ),
             child: ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.secondary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.savings_outlined, color: AppColors.secondary),
+              ),
               title: const Text('Saving Max Limit'),
+              subtitle: Text('Set max saving limit'),
               trailing: Obx(
                 () => TextButton(
                   onPressed: () {
@@ -40,8 +50,10 @@ class SettingScreen extends StatelessWidget {
                       (val) => settingsCtrl.setMaxSavingLimit(val),
                     );
                   },
-                  child: Text(
+                  child: AppText(
                     settingsCtrl.maxSavingLimit.value.toStringAsFixed(0),
+                    color: AppColors.secondary,
+                    fontWeight: .bold,
                   ),
                 ),
               ),
@@ -56,7 +68,19 @@ class SettingScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
             ),
             child: ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: AppColors.primary,
+                ),
+              ),
               title: const Text('Wallet Max Limit'),
+              subtitle: Text('Set max wallet limit'),
               trailing: Obx(
                 () => TextButton(
                   onPressed: () {
@@ -67,32 +91,12 @@ class SettingScreen extends StatelessWidget {
                       (val) => settingsCtrl.setMaxWalletLimit(val),
                     );
                   },
-                  child: Text(
+                  child: AppText(
                     settingsCtrl.maxWalletLimit.value.toStringAsFixed(0),
+                    color: AppColors.secondary,
+                    fontWeight: .bold,
                   ),
                 ),
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Obx(
-              () => ListTile(
-                title: const Text('Cycle Start Day'),
-                subtitle: Text(
-                  'Your month starts on day ${settingsCtrl.cycleStartDay.value}',
-                ),
-                trailing: const Icon(Icons.calendar_month_rounded, size: 20),
-                onTap: () {
-                  _showDayPickerDialog(
-                    context,
-                    settingsCtrl.cycleStartDay.value,
-                    (day) => settingsCtrl.setCycleStartDay(day),
-                  );
-                },
               ),
             ),
           ),
@@ -125,6 +129,37 @@ class SettingScreen extends StatelessWidget {
 
           // ── Monthly Reset section ────────────────────────────────────────
           _SectionHeader(title: 'Monthly Cycle'),
+
+          Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Obx(
+              () => ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.calendar_today, color: AppColors.primary),
+                ),
+                title: const Text('Cycle Start Day'),
+                subtitle: Text(
+                  'Your month starts on day ${settingsCtrl.cycleStartDay.value}',
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  _showDayPickerDialog(
+                    context,
+                    settingsCtrl.cycleStartDay.value,
+                    (day) => settingsCtrl.setCycleStartDay(day),
+                  );
+                },
+              ),
+            ),
+          ),
 
           // View archive history
           Card(
