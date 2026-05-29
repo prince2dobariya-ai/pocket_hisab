@@ -133,7 +133,7 @@ class _HomeMainState extends State<HomeMain>
                   children: [
                     Icon(
                       Icons.dashboard_outlined,
-                      size: 34,
+                      size: 32,
                       color: _tabController.index == 0
                           ? AppColors.primary
                           : Colors.grey,
@@ -157,7 +157,7 @@ class _HomeMainState extends State<HomeMain>
                   children: [
                     Icon(
                       Icons.account_balance_wallet_outlined,
-                      size: 34,
+                      size: 32,
                       color: _tabController.index == 1
                           ? AppColors.primary
                           : Colors.grey,
@@ -181,7 +181,7 @@ class _HomeMainState extends State<HomeMain>
                   children: [
                     Icon(
                       Icons.group_outlined,
-                      size: 34,
+                      size: 32,
                       color: _tabController.index == 2
                           ? AppColors.primary
                           : Colors.grey,
