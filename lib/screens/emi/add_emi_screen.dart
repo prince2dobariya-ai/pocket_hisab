@@ -17,7 +17,6 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
   final _nameController = TextEditingController();
   final _totalController = TextEditingController();
   final _monthlyController = TextEditingController();
-  final _paidController = TextEditingController(text: '0');
   final _tenureController = TextEditingController(text: '12');
 
   DateTime _startDate = DateTime.now();
@@ -27,31 +26,26 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
     _nameController.dispose();
     _totalController.dispose();
     _monthlyController.dispose();
-    _paidController.dispose();
     _tenureController.dispose();
     super.dispose();
   }
 
   void _calculateMonthly() {
     final total = double.tryParse(_totalController.text) ?? 0;
-    final paid = double.tryParse(_paidController.text) ?? 0;
-    final remaining = total - paid;
     final tenure = int.tryParse(_tenureController.text) ?? 0;
-    if (remaining > 0 && tenure > 0) {
+    if (total > 0 && tenure > 0) {
       setState(() {
-        _monthlyController.text = (remaining / tenure).toStringAsFixed(2);
+        _monthlyController.text = (total / tenure).toStringAsFixed(2);
       });
     }
   }
 
   void _calculateTenure() {
     final total = double.tryParse(_totalController.text) ?? 0;
-    final paid = double.tryParse(_paidController.text) ?? 0;
-    final remaining = total - paid;
     final monthly = double.tryParse(_monthlyController.text) ?? 0;
-    if (remaining > 0 && monthly > 0) {
+    if (total > 0 && monthly > 0) {
       setState(() {
-        _tenureController.text = (remaining / monthly).ceil().toString();
+        _tenureController.text = (total / monthly).ceil().toString();
       });
     }
   }
@@ -76,28 +70,12 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
               hintText: "e.g. iPhone 15 Pro",
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    controller: _totalController,
-                    keyboardType: TextInputType.number,
-                    labelText: "Total Amount",
-                    hintText: "0.00",
-                    onChange: (_) => _calculateMonthly(),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: CustomTextField(
-                    controller: _paidController,
-                    keyboardType: TextInputType.number,
-                    labelText: "Already Paid",
-                    hintText: "0.00",
-                    onChange: (_) => _calculateMonthly(),
-                  ),
-                ),
-              ],
+            CustomTextField(
+              controller: _totalController,
+              keyboardType: TextInputType.number,
+              labelText: "Total Amount",
+              hintText: "0.00",
+              onChange: (_) => _calculateMonthly(),
             ),
             const SizedBox(height: 16),
             Row(
@@ -169,7 +147,6 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
                 }
 
                 final total = double.parse(_totalController.text);
-                final paid = double.parse(_paidController.text);
                 final monthly = double.parse(_monthlyController.text);
                 final tenureMonths = int.tryParse(_tenureController.text) ?? 12;
 
@@ -177,15 +154,16 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
                   Duration(days: tenureMonths * 30),
                 );
 
+                // Always start with paidAmount = 0; user pays instalments manually
                 final emi = EmiModel(
                   name: _nameController.text,
                   totalAmount: total,
-                  paidAmount: paid,
-                  remainingAmount: total - paid,
+                  paidAmount: 0,
+                  remainingAmount: total,
                   monthlyAmount: monthly,
                   startDate: _startDate.toString(),
                   endDate: endDate.toString(),
-                  status: (total - paid) <= 0 ? 'completed' : 'active',
+                  status: 'active',
                   createdAt: DateTime.now().toString(),
                 );
 

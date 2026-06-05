@@ -39,7 +39,7 @@ class _PersonScreenState extends State<PersonScreen> {
           children: [
             const SizedBox(height: 8),
             _buildNetBalanceCard(),
-            _buildSearchBar(),
+            if (false) _buildSearchBar(),
             _buildFilterChips(),
             _buildPersonList(),
           ],

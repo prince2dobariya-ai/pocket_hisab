@@ -18,14 +18,13 @@ class AllTransactionsScreen extends StatelessWidget {
     final txCtrl = Get.find<TransactionController>();
 
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         appBar: CustomAppBar(
           title: "All Transactions",
           bottom: const TabBar(
-            isScrollable: true,
             tabs: [
-              Tab(text: "All"),
+              // Tab(text: "All"),
               Tab(text: "Expenses"),
               Tab(text: "Wallet"),
               Tab(text: "Savings"),
@@ -50,7 +49,7 @@ class AllTransactionsScreen extends StatelessWidget {
 
           return TabBarView(
             children: [
-              _buildTransactionList(allItems),
+              // _buildTransactionList(allItems),
               _buildTransactionList(expenseItems),
               _buildTransactionList(walletItems),
               _buildTransactionList(savingItems),
@@ -78,6 +77,7 @@ class AllTransactionsScreen extends StatelessWidget {
     final sortedDates = grouped.keys.toList();
 
     return ListView.builder(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
       itemCount: sortedDates.length,
       itemBuilder: (context, dateIndex) {

@@ -161,9 +161,9 @@ class RecentTransactions extends StatelessWidget {
       }
     }
 
-    // Add Saving Transactions (skip Wallet transfers to avoid duplicates with wallet debit)
+    // Add Saving Transactions (skip transfers to/from Wallet to avoid duplicates)
     for (var t in savingTxs) {
-      if (t.source == 'Wallet') continue;
+      if (t.source == 'Wallet' || t.source == 'Transfer to Wallet') continue;
 
       DateTime dt = DateTime.parse(t.createdAt);
       merged.add(

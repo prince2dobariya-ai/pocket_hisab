@@ -106,6 +106,7 @@ class WalletScreen extends StatelessWidget {
                 ..sort((a, b) => b.compareTo(a));
 
               return ListView.builder(
+                physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.only(bottom: 90, top: 4),
                 itemCount: sortedDates.length,
                 itemBuilder: (context, index) {
