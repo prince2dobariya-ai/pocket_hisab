@@ -17,7 +17,21 @@ class DatabaseService {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'pocket_hisab.db');
 
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 2,
+      onCreate: _onCreate,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(
+            'ALTER TABLE hisab_transactions ADD COLUMN is_old INTEGER NOT NULL DEFAULT 0',
+          );
+          await db.execute(
+            'ALTER TABLE emis ADD COLUMN due_day_of_month INTEGER NOT NULL DEFAULT 1',
+          );
+        }
+      },
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -81,6 +95,7 @@ class DatabaseService {
         start_date TEXT NOT NULL,
         end_date TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT 'active',
+        due_day_of_month INTEGER NOT NULL DEFAULT 1,
         created_at TEXT NOT NULL
       )
     ''');
@@ -95,6 +110,7 @@ class DatabaseService {
         amount_paid REAL NOT NULL DEFAULT 0,
         remaining_amount REAL NOT NULL,
         status TEXT NOT NULL DEFAULT 'pending',
+        is_old INTEGER NOT NULL DEFAULT 0,
         note TEXT,
         created_at TEXT NOT NULL,
         FOREIGN KEY (person_id) REFERENCES persons(id)

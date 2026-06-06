@@ -25,7 +25,7 @@ class PersonController extends GetxController {
       SELECT p.*, 
              (SELECT SUM(CASE WHEN type = 'given' THEN remaining_amount ELSE -remaining_amount END) 
               FROM hisab_transactions 
-              WHERE person_id = p.id AND status = 'pending') as balance
+              WHERE person_id = p.id AND status = 'pending' AND is_old = 0) as balance
       FROM $_table p
       ORDER BY p.id DESC
     ''');

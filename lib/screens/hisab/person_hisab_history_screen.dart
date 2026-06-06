@@ -156,6 +156,27 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                   time,
                   style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
                 ),
+                if (item.isOld) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade100,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      "Old",
+                      style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
             if (item.note != null && item.note!.isNotEmpty)
@@ -319,6 +340,7 @@ class _AddPersonHisabBottomSheetState
   late final TextEditingController _dateController;
 
   late bool _isBorrowed;
+  bool _isOldMoney = false;
 
   @override
   void initState() {
@@ -448,7 +470,27 @@ class _AddPersonHisabBottomSheetState
             labelText: 'What was this for?',
             maxLine: 3,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Checkbox(
+                value: _isOldMoney,
+                activeColor: Colors.orange,
+                onChanged: (val) {
+                  setState(() {
+                    _isOldMoney = val ?? false;
+                  });
+                },
+              ),
+              const Expanded(
+                child: Text(
+                  "Mark as Old Record (Does not calculate in balance)",
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           CustomButton(
             title: _isBorrowed ? "Received" : "Given",
             color: _isBorrowed ? Colors.green.shade400 : Colors.red.shade400,
@@ -485,6 +527,7 @@ class _AddPersonHisabBottomSheetState
                   status: 'pending',
                   amountPaid: 0,
                   remainingAmount: amount,
+                  isOld: _isOldMoney,
                 ),
               );
 

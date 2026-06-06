@@ -7,6 +7,7 @@ class HisabModel {
   final double amountPaid;
   final double remainingAmount;
   final String status; // 'pending' | 'settled'
+  final bool isOld;
   final String? note;
   final String createdAt;
 
@@ -19,6 +20,7 @@ class HisabModel {
     required this.amountPaid,
     required this.remainingAmount,
     required this.status,
+    this.isOld = false,
     this.note,
     required this.createdAt,
   });
@@ -32,6 +34,7 @@ class HisabModel {
       'amount_paid': amountPaid,
       'remaining_amount': remainingAmount,
       'status': status,
+      'is_old': isOld ? 1 : 0,
       'note': note,
       'created_at': createdAt,
     };
@@ -47,6 +50,7 @@ class HisabModel {
       amountPaid: (map['amount_paid'] as num).toDouble(),
       remainingAmount: (map['remaining_amount'] as num).toDouble(),
       status: map['status'] as String,
+      isOld: map['is_old'] == 1,
       note: map['note'] as String?,
       createdAt: map['created_at'] as String,
     );
@@ -61,6 +65,7 @@ class HisabModel {
     double? amountPaid,
     double? remainingAmount,
     String? status,
+    bool? isOld,
     String? note,
     String? createdAt,
   }) {
@@ -73,6 +78,7 @@ class HisabModel {
       amountPaid: amountPaid ?? this.amountPaid,
       remainingAmount: remainingAmount ?? this.remainingAmount,
       status: status ?? this.status,
+      isOld: isOld ?? this.isOld,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
     );

@@ -123,12 +123,12 @@ class HisabController extends GetxController {
 
   /// Total I am owed (I gave money to friends, type = 'given')
   double get totalOwedToMe => hisabs
-      .where((h) => h.type == 'given' && h.status == 'pending')
+      .where((h) => h.type == 'given' && h.status == 'pending' && !h.isOld)
       .fold(0.0, (sum, h) => sum + h.remainingAmount);
 
   /// Total I owe (I borrowed money, type = 'borrowed')
   double get totalIOwe => hisabs
-      .where((h) => h.type == 'borrowed' && h.status == 'pending')
+      .where((h) => h.type == 'borrowed' && h.status == 'pending' && !h.isOld)
       .fold(0.0, (sum, h) => sum + h.remainingAmount);
 
   List<HisabModel> get pendingHisabs =>

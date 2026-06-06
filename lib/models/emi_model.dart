@@ -9,6 +9,7 @@ class EmiModel {
   final String endDate;
   final String status; // 'active' | 'completed'
   final String createdAt;
+  final int dueDayOfMonth; // e.g. 10 or 22 — the day each instalment is due
 
   EmiModel({
     this.id,
@@ -21,7 +22,31 @@ class EmiModel {
     required this.endDate,
     required this.status,
     required this.createdAt,
+    this.dueDayOfMonth = 1,
   });
+
+  /// Computed: EMI due status label
+  String get dueStatus {
+    if (status == 'completed') return 'Completed';
+    final now = DateTime.now();
+    final dueThisMonth = DateTime(
+      now.year,
+      now.month,
+      dueDayOfMonth.clamp(1, 28),
+    );
+    final diff = dueThisMonth
+        .difference(DateTime(now.year, now.month, now.day))
+        .inDays;
+    if (diff == 0) {
+      return 'Due Today';
+    } else if (diff < 0) {
+      return 'Overdue';
+    } else if (diff <= 5) {
+      return 'Due in $diff days';
+    } else {
+      return 'Due on ${dueDayOfMonth}th';
+    }
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -35,6 +60,7 @@ class EmiModel {
       'end_date': endDate,
       'status': status,
       'created_at': createdAt,
+      'due_day_of_month': dueDayOfMonth,
     };
   }
 
@@ -50,6 +76,7 @@ class EmiModel {
       endDate: map['end_date'] as String,
       status: map['status'] as String,
       createdAt: map['created_at'] as String,
+      dueDayOfMonth: (map['due_day_of_month'] as int?) ?? 1,
     );
   }
 
@@ -64,6 +91,7 @@ class EmiModel {
     String? endDate,
     String? status,
     String? createdAt,
+    int? dueDayOfMonth,
   }) {
     return EmiModel(
       id: id ?? this.id,
@@ -76,6 +104,7 @@ class EmiModel {
       endDate: endDate ?? this.endDate,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      dueDayOfMonth: dueDayOfMonth ?? this.dueDayOfMonth,
     );
   }
 }

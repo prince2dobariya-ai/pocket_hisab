@@ -18,8 +18,10 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
   final _totalController = TextEditingController();
   final _monthlyController = TextEditingController();
   final _tenureController = TextEditingController(text: '12');
+  final _alreadyPaidController = TextEditingController(text: '0');
 
   DateTime _startDate = DateTime.now();
+  int _dueDayOfMonth = DateTime.now().day;
 
   @override
   void dispose() {
@@ -27,6 +29,7 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
     _totalController.dispose();
     _monthlyController.dispose();
     _tenureController.dispose();
+    _alreadyPaidController.dispose();
     super.dispose();
   }
 
@@ -101,7 +104,70 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+
+            // Already Paid Amount
+            CustomTextField(
+              controller: _alreadyPaidController,
+              keyboardType: TextInputType.number,
+              labelText: "Already Paid Amount",
+              hintText: "0.00 (if you've paid some instalments before)",
+            ),
             const SizedBox(height: 24),
+
+            // Due Day of Month picker
+            const Text(
+              "Monthly Due Date",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.event_repeat_rounded,
+                    size: 20,
+                    color: Colors.blueGrey,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    "Every month on the",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        value: _dueDayOfMonth,
+                        items: List.generate(28, (i) => i + 1)
+                            .map(
+                              (d) => DropdownMenuItem(
+                                value: d,
+                                child: Text(
+                                  '$d${_daySuffix(d)}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (val) {
+                          if (val != null) setState(() => _dueDayOfMonth = val);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
             const Text(
               "Start Date",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -149,22 +215,27 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
                 final total = double.parse(_totalController.text);
                 final monthly = double.parse(_monthlyController.text);
                 final tenureMonths = int.tryParse(_tenureController.text) ?? 12;
+                final alreadyPaid =
+                    double.tryParse(_alreadyPaidController.text) ?? 0.0;
+
+                final remaining = (total - alreadyPaid).clamp(0.0, total);
+                final newStatus = remaining <= 0 ? 'completed' : 'active';
 
                 final endDate = _startDate.add(
                   Duration(days: tenureMonths * 30),
                 );
 
-                // Always start with paidAmount = 0; user pays instalments manually
                 final emi = EmiModel(
                   name: _nameController.text,
                   totalAmount: total,
-                  paidAmount: 0,
-                  remainingAmount: total,
+                  paidAmount: alreadyPaid,
+                  remainingAmount: remaining,
                   monthlyAmount: monthly,
                   startDate: _startDate.toString(),
                   endDate: endDate.toString(),
-                  status: 'active',
+                  status: newStatus,
                   createdAt: DateTime.now().toString(),
+                  dueDayOfMonth: _dueDayOfMonth,
                 );
 
                 final success = await Get.find<EmiController>().addEmi(emi);
@@ -180,5 +251,19 @@ class _AddEmiScreenState extends State<AddEmiScreen> {
         ),
       ),
     );
+  }
+
+  String _daySuffix(int day) {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
   }
 }

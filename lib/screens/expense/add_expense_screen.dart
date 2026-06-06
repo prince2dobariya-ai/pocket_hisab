@@ -32,6 +32,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   String _selectedPaymentMethod = 'Wallet';
   String? _selectedPerson;
   DateTime _selectedDateTime = DateTime.now();
+  bool _isOldMoney = false;
 
   final List<_CategoryItem> _categories = [
     _CategoryItem(name: 'Food', icon: Icons.restaurant, color: Colors.orange),
@@ -41,6 +42,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       color: Colors.blue,
     ),
     _CategoryItem(name: 'Rent', icon: Icons.home, color: Colors.purple),
+    _CategoryItem(name: 'Friend', icon: Icons.person, color: Colors.indigo),
     _CategoryItem(
       name: 'Shopping',
       icon: Icons.shopping_bag,
@@ -53,7 +55,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       icon: Icons.medical_services,
       color: Colors.green,
     ),
-    _CategoryItem(name: 'Friend', icon: Icons.person, color: Colors.indigo),
     _CategoryItem(name: 'Others', icon: Icons.category, color: Colors.blueGrey),
   ];
 
@@ -470,6 +471,29 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         ),
                       );
                     }),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _isOldMoney,
+                          activeColor: AppColors.primary,
+                          onChanged: (val) {
+                            setState(() {
+                              _isOldMoney = val ?? false;
+                            });
+                          },
+                        ),
+                        const Expanded(
+                          child: Text(
+                            "Mark as Old Record (Does not calculate in balance)",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
 
@@ -757,6 +781,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             amountPaid: 0.0,
                             remainingAmount: amount,
                             status: 'pending',
+                            isOld: _isOldMoney,
                             note: _noteController.text.trim(),
                             createdAt: DateTime.now().toIso8601String(),
                           ),

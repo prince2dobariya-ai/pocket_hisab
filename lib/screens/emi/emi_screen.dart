@@ -198,25 +198,32 @@ class _EmiCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isCompleted
-                        ? Colors.green.withValues(alpha: 0.1)
-                        : AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    emi.status.toUpperCase(),
-                    style: TextStyle(
-                      color: isCompleted ? Colors.green : AppColors.primary,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isCompleted
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        emi.status.toUpperCase(),
+                        style: TextStyle(
+                          color: isCompleted ? Colors.green : AppColors.primary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 4),
+                    _DueStatusBadge(dueStatus: emi.dueStatus),
+                  ],
                 ),
                 PopupMenuButton(
                   icon: const Icon(Icons.more_vert, size: 20),
@@ -387,6 +394,51 @@ class _AmountInfo extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _DueStatusBadge extends StatelessWidget {
+  final String dueStatus;
+
+  const _DueStatusBadge({required this.dueStatus});
+
+  @override
+  Widget build(BuildContext context) {
+    Color bgColor;
+    Color textColor;
+
+    if (dueStatus == 'Due Today') {
+      bgColor = Colors.orange.shade100;
+      textColor = Colors.orange.shade800;
+    } else if (dueStatus == 'Overdue') {
+      bgColor = Colors.red.shade100;
+      textColor = Colors.red.shade800;
+    } else if (dueStatus.startsWith('Due in')) {
+      bgColor = Colors.amber.shade100;
+      textColor = Colors.amber.shade900;
+    } else if (dueStatus == 'Completed') {
+      bgColor = Colors.green.shade100;
+      textColor = Colors.green.shade800;
+    } else {
+      bgColor = Colors.blue.shade50;
+      textColor = Colors.blue.shade700;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        dueStatus,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }
