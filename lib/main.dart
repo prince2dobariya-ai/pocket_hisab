@@ -60,6 +60,14 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
+      builder: (context, widget) {
+        return MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.0)),
+          child: widget!,
+        );
+      },
       home: showOnboarding ? const OnboardingScreen() : const HomeMain(),
     );
   }
