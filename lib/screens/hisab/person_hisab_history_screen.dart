@@ -116,78 +116,95 @@ class PersonHisabHistoryScreen extends StatelessWidget {
       }
     } catch (_) {}
 
-    return Container(
-      width: double.infinity,
-      alignment: isGiven ? Alignment.centerRight : Alignment.centerLeft,
-      margin: const EdgeInsets.only(bottom: 8),
+    return GestureDetector(
+      onTap: () {
+        Get.bottomSheet(
+          _AddPersonHisabBottomSheet(
+            personId: item.personId.toString(),
+            isBorrowed: item.type == 'borrowed',
+            personName: item.personName,
+            existingHisab: item,
+          ),
+          backgroundColor: Colors.white,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+        );
+      },
       child: Container(
-        constraints: BoxConstraints(maxWidth: Get.width * 0.75),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: themeColor, size: 20),
-                const SizedBox(width: 4),
-                Text(
-                  CurrencyHelper.format(item.amount),
-                  style: TextStyle(
-                    color: themeColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+        width: double.infinity,
+        alignment: isGiven ? Alignment.centerRight : Alignment.centerLeft,
+        margin: const EdgeInsets.only(bottom: 8),
+        child: Container(
+          constraints: BoxConstraints(maxWidth: Get.width * 0.75),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade300),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, color: themeColor, size: 20),
+                  const SizedBox(width: 4),
+                  Text(
+                    CurrencyHelper.format(item.amount),
+                    style: TextStyle(
+                      color: themeColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  time,
-                  style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
-                ),
-                if (item.isOld) ...[
                   const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade100,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      "Old",
-                      style: TextStyle(
-                        color: Colors.deepOrange,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                  Text(
+                    time,
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                  ),
+                  if (item.isOld) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        "Old",
+                        style: TextStyle(
+                          color: Colors.deepOrange,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
-            ),
-            if (item.note != null && item.note!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  item.note!,
-                  style: const TextStyle(color: Colors.black87, fontSize: 14),
-                ),
               ),
-          ],
+              if (item.note != null && item.note!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    item.note!,
+                    style: const TextStyle(color: Colors.black87, fontSize: 14),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -200,7 +217,7 @@ class PersonHisabHistoryScreen extends StatelessWidget {
           .toList();
 
       double netBalance = 0;
-      for (var h in items) {
+      for (var h in items.where((i) => !i.isOld)) {
         netBalance += (h.type == 'given' ? h.amount : -h.amount);
       }
 
@@ -247,8 +264,11 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                           personName: personName,
                         ),
                         backgroundColor: Colors.white,
+                        isScrollControlled: true,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: .vertical(top: .circular(24)),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(24),
+                          ),
                         ),
                       );
                     },
@@ -267,8 +287,11 @@ class PersonHisabHistoryScreen extends StatelessWidget {
                           personName: personName,
                         ),
                         backgroundColor: Colors.white,
+                        isScrollControlled: true,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: .vertical(top: .circular(24)),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(24),
+                          ),
                         ),
                       );
                     },
@@ -322,11 +345,14 @@ class _AddPersonHisabBottomSheet extends StatefulWidget {
   final String? personId;
   final bool? isBorrowed;
   final String? personName;
+  final HisabModel? existingHisab;
 
   const _AddPersonHisabBottomSheet({
+    super.key,
     this.personId,
     this.isBorrowed,
     this.personName,
+    this.existingHisab,
   });
   @override
   State<_AddPersonHisabBottomSheet> createState() =>
@@ -345,13 +371,24 @@ class _AddPersonHisabBottomSheetState
   @override
   void initState() {
     super.initState();
-    _amountController = TextEditingController();
-    _noteController = TextEditingController();
+    _amountController = TextEditingController(
+      text: widget.existingHisab?.amount.toString() ?? '',
+    );
+    _noteController = TextEditingController(
+      text: widget.existingHisab?.note ?? '',
+    );
+
+    DateTime date = DateTime.now();
+    if (widget.existingHisab != null &&
+        widget.existingHisab!.createdAt.contains('T')) {
+      date = DateTime.parse(widget.existingHisab!.createdAt);
+    }
+
     _dateController = TextEditingController(
-      text:
-          "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+      text: "${date.day}/${date.month}/${date.year}",
     );
     _isBorrowed = widget.isBorrowed ?? true;
+    _isOldMoney = widget.existingHisab?.isOld ?? false;
   }
 
   @override
@@ -492,7 +529,9 @@ class _AddPersonHisabBottomSheetState
           ),
           const SizedBox(height: 16),
           CustomButton(
-            title: _isBorrowed ? "Received" : "Given",
+            title: widget.existingHisab != null
+                ? "Update"
+                : (_isBorrowed ? "Received" : "Given"),
             color: _isBorrowed ? Colors.green.shade400 : Colors.red.shade400,
             onTap: () async {
               final amountText = _amountController.text.trim();
@@ -514,46 +553,101 @@ class _AddPersonHisabBottomSheetState
               // Get or create person to get personId
               // final personId = await hisabCtrl.getOrCreatePerson(widget.personId);
 
-              // Add Hisab
               final type = _isBorrowed ? 'borrowed' : 'given';
-              await hisabCtrl.addHisab(
-                HisabModel(
-                  personId: int.parse(widget.personId.toString()),
-                  personName: widget.personId,
+
+              if (widget.existingHisab != null) {
+                // Update existing
+                double oldAmount = widget.existingHisab!.amount;
+                String oldType = widget.existingHisab!.type;
+
+                final updatedHisab = widget.existingHisab!.copyWith(
                   type: type,
                   amount: amount,
                   note: _noteController.text.trim(),
-                  createdAt: DateTime.now().toIso8601String(),
-                  status: 'pending',
-                  amountPaid: 0,
-                  remainingAmount: amount,
+                  remainingAmount: amount, // Simplified assumption
                   isOld: _isOldMoney,
-                ),
-              );
+                );
 
-              // Affect Wallet
-              if (walletCtrl.wallets.isNotEmpty) {
-                final walletId = walletCtrl.wallets.first.id!;
-                if (_isBorrowed) {
-                  await walletCtrl.credit(
-                    walletId: walletId,
-                    amount: amount,
-                    source: 'Hisab: ${widget.personName}',
-                    note: 'Received from ${widget.personName}',
-                  );
-                } else {
-                  await walletCtrl.debit(
-                    walletId: walletId,
-                    amount: amount,
-                    source: 'Hisab: ${widget.personName}',
-                    note: 'Given to ${widget.personName}',
-                  );
+                await hisabCtrl.updateHisab(updatedHisab);
+
+                if (walletCtrl.wallets.isNotEmpty) {
+                  final walletId = walletCtrl.wallets.first.id!;
+                  // Revert old transaction in wallet
+                  if (oldType == 'borrowed') {
+                    await walletCtrl.debit(
+                      walletId: walletId,
+                      amount: oldAmount,
+                      source: 'Hisab Correction',
+                      note:
+                          'Reverting previous Received from ${widget.personName}',
+                    );
+                  } else {
+                    await walletCtrl.credit(
+                      walletId: walletId,
+                      amount: oldAmount,
+                      source: 'Hisab Correction',
+                      note: 'Reverting previous Given to ${widget.personName}',
+                    );
+                  }
+
+                  // Apply new transaction
+                  if (_isBorrowed) {
+                    await walletCtrl.credit(
+                      walletId: walletId,
+                      amount: amount,
+                      source: 'Hisab Update',
+                      note: 'Updated Received from ${widget.personName}',
+                    );
+                  } else {
+                    await walletCtrl.debit(
+                      walletId: walletId,
+                      amount: amount,
+                      source: 'Hisab Update',
+                      note: 'Updated Given to ${widget.personName}',
+                    );
+                  }
                 }
               } else {
-                Get.snackbar(
-                  "Info",
-                  "Hisab recorded, but no wallet found to update balance.",
+                // Add new Hisab
+                await hisabCtrl.addHisab(
+                  HisabModel(
+                    personId: int.parse(widget.personId.toString()),
+                    personName: widget.personId,
+                    type: type,
+                    amount: amount,
+                    note: _noteController.text.trim(),
+                    createdAt: DateTime.now().toIso8601String(),
+                    status: 'pending',
+                    amountPaid: 0,
+                    remainingAmount: amount,
+                    isOld: _isOldMoney,
+                  ),
                 );
+
+                // Affect Wallet
+                if (walletCtrl.wallets.isNotEmpty) {
+                  final walletId = walletCtrl.wallets.first.id!;
+                  if (_isBorrowed) {
+                    await walletCtrl.credit(
+                      walletId: walletId,
+                      amount: amount,
+                      source: 'Hisab: ${widget.personName}',
+                      note: 'Received from ${widget.personName}',
+                    );
+                  } else {
+                    await walletCtrl.debit(
+                      walletId: walletId,
+                      amount: amount,
+                      source: 'Hisab: ${widget.personName}',
+                      note: 'Given to ${widget.personName}',
+                    );
+                  }
+                } else {
+                  Get.snackbar(
+                    "Info",
+                    "Hisab recorded, but no wallet found to update balance.",
+                  );
+                }
               }
 
               Get.back();
